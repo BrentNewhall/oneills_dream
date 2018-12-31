@@ -9,6 +9,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Resources
 
-Art is from [Space Shooter Assets](https://opengameart.org/content/space-shooter-assets)
-on [OpenGameArt.org](https://opengameart.org). I drew the blue targeting
-reticule myself in GIMP.
+The collector ship and asteroid are from
+[Space Shooter Assets](https://opengameart.org/content/space-shooter-assets)
+on [OpenGameArt.org](https://opengameart.org). The space background is a public
+domain image from NASA. I drew the blue targeting reticule myself in GIMP.
