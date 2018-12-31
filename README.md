@@ -3,7 +3,8 @@
 This is a simple RTS game where you use collector drones to mine resources
 from asteroids and use those to build space colonies.
 
-This game was made by [Brent P. Newhall](http://brentnewhall.com).
+This game was made by [Brent P. Newhall](http://brentnewhall.com) as part of his
+[Game a Week challenge](https://s3.amazonaws.com/brents-portfolio/index.html).
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
