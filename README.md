@@ -7,6 +7,12 @@ This game was made by [Brent P. Newhall](http://brentnewhall.com).
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Work Log
+
+| Day | Time |
+|-----|------|
+| 2018-12-31 | 1:00 |
+
 ## Resources
 
 The collector ship and asteroid are from
