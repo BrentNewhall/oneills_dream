@@ -10,4 +10,5 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Resources
 
 Art is from [Space Shooter Assets](https://opengameart.org/content/space-shooter-assets)
-on [OpenGameArt.org](https://opengameart.org).
+on [OpenGameArt.org](https://opengameart.org). I drew the blue targeting
+reticule myself in GIMP.

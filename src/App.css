@@ -1,8 +1,9 @@
 .Space {
   position: absolute;
-  width: 550px;
-  height: 550px;
-  background-color: black;
+  width: 1050px;
+  height: 1050px;
+  background-image: url('/images/space_bg.jpg');
+  background-size: cover;
 }
 
 .asteroid {

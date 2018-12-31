@@ -12,7 +12,7 @@ class App extends Component {
     }
     // Create asteroids
     this.asteroids = [];
-    for( let i = 0; i < 10; i++ ) {
+    for( let i = 0; i < 30; i++ ) {
       const asteroid = {
         x: Math.random() * world.width,
         y: Math.random() * world.height,
