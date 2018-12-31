@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 
+import world from './global';
+
 class App extends Component {
   constructor( props ) {
     super( props );
@@ -8,8 +10,8 @@ class App extends Component {
     this.asteroids = [];
     for( let i = 0; i < 10; i++ ) {
       const asteroid = {
-        x: Math.random() * 500,
-        y: Math.random() * 500,
+        x: Math.random() * world.width,
+        y: Math.random() * world.height,
         size: Math.random() * 30 + 30
       }
       this.asteroids.push( asteroid );
