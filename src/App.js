@@ -6,13 +6,17 @@ import world from './global';
 class App extends Component {
   constructor( props ) {
     super( props );
+    this.state = {
+      reticuleX: -30,
+      reticuleY: -30
+    }
     // Create asteroids
     this.asteroids = [];
     for( let i = 0; i < 10; i++ ) {
       const asteroid = {
         x: Math.random() * world.width,
         y: Math.random() * world.height,
-        size: Math.random() * 30 + 30
+        size: Math.random() * 30 + 40
       }
       this.asteroids.push( asteroid );
     }
@@ -20,19 +24,73 @@ class App extends Component {
     this.collectors = [];
     this.collectors.push({
       x: 250,
-      y: 250
+      y: 250,
+      target: -1
     });
-    // Create selection reticule
-    this.reticule = { x: -50, y: -50 };
+    this.selectedCollector = -1;
     // Define functions
     this.collectorClicked = this.collectorClicked.bind(this);
+    this.collectorAtTarget = this.collectorAtTarget.bind(this);
+    this.asteroidClicked = this.asteroidClicked.bind(this);
+    this.gameLoop = this.gameLoop.bind(this);
+    // Set up game loop to run at 60 fps
+    setInterval( this.gameLoop, 16 );
   }
 
   collectorClicked(e) {
-    const collectorIndex = parseInt( e.currentTarget.alt.substring( 10 ) );
-    this.reticule.x = this.collectors[collectorIndex].x;
-    this.reticule.y = this.collectors[collectorIndex].y;
-    this.forceUpdate();
+    this.selectedCollector = parseInt( e.currentTarget.alt.substring( 10 ) );
+    this.setState( { 
+      reticuleX: this.collectors[this.selectedCollector].x,
+      reticuleY: this.collectors[this.selectedCollector].y
+    } );
+  }
+
+  asteroidClicked(e) {
+    if( this.selectedCollector >= 0  &&
+        this.selectedCollector < this.collectors.length ) {
+      const index = parseInt( e.currentTarget.alt.substring( 9 ) );
+      this.collectors[this.selectedCollector].target = index;
+      // Remove reticule
+      this.setState( { reticuleX: -30, reticuleY: -30 } );
+    }
+  }
+
+  collectorAtTarget( collector, target ) {
+    if( collector.x >= target.x  &&
+        collector.x + 32 <= target.x + target.size  &&
+        collector.y >= target.y  &&
+        collector.y + 32 <= target.y + target.size ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  gameLoop() {
+    this.collectors.forEach( (collector) => {
+      if( collector.target >= 0 ) {
+        if( ! this.collectorAtTarget(collector, this.asteroids[collector.target]) ) {
+          // Move towards it
+          const target = this.asteroids[collector.target];
+          if( collector.x >= target.x ) {
+            collector.x -= 1;
+          }
+          else if( collector.x <= target.x + target.size ) {
+            collector.x += 1;
+          }
+          if( collector.y >= target.y ) {
+            collector.y -= 1;
+          }
+          else if( collector.y <= target.y + target.size ) {
+            collector.y += 1;
+          }
+          this.forceUpdate();
+        } else {
+          // Reached target
+          collector.target = -1;
+        }
+      }
+    })
   }
 
   render() {
@@ -46,7 +104,7 @@ class App extends Component {
       }
       return <img style={asteroidStyle} alt={'Asteroid ' + index}
           key={'asteroid' + index} className='asteroid'
-          src='images/asteroid.png' />
+          src='images/asteroid.png' onClick={this.asteroidClicked} />
     });
     // Set up collector images
     const collectorObjects = this.collectors.map( (collector, index) => {
@@ -60,8 +118,8 @@ class App extends Component {
     });
     // Set up reticule image
     const reticuleStle = {
-      left: this.reticule.x,
-      top: this.reticule.y
+      left: this.state.reticuleX,
+      top: this.state.reticuleY
     }
     const reticuleObject = <img style={reticuleStle} alt='Selector reticule'
         key='Selector reticule' className='reticule'
