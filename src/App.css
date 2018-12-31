@@ -7,4 +7,12 @@
 
 .asteroid {
   position: absolute;
+  z-index: 10;
+}
+
+.collector {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  z-index: 20;
 }
