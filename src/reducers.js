@@ -4,7 +4,10 @@ function reducers( state, action ) {
     switch( action.type ) {
         case ACTION_ADD_ALUMINUM:
             console.log( "Aluminimum added!" );
-            return state;
+            return {
+                ...state,
+                aluminum: action.amount
+            };
         default:
             return state;
     }
