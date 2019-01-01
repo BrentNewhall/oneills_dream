@@ -9,13 +9,16 @@ import reducers from './reducers';
 const initialState = { aluminum: 0 };
 const store = createStore( reducers, initialState );
 
+/* Displays status bar (amount of aluminum) */
+
 class StatusBar extends Component {
   render() {
-    /* const { aluminum } = this.context.store.getState(); */
     const aluminum = this.props.store.getState().aluminum;
     return <div className='StatusBar'>Aluminum: {aluminum}</div>;
   }
 }
+
+/* Main game world */
 
 class App extends Component {
   constructor( props ) {
@@ -66,11 +69,13 @@ class App extends Component {
         this.selectedCollector < this.collectors.length ) {
       const index = parseInt( e.currentTarget.alt.substring( 9 ) );
       this.collectors[this.selectedCollector].target = index;
+      this.collectors[this.selectedCollector].mining = -1; // No longer mining
       // Remove reticule
       this.setState( { reticuleX: -30, reticuleY: -30 } );
     }
   }
 
+  // Returns true if collector is within target's bounding box
   collectorAtTarget( collector, target ) {
     if( collector.x >= target.x  &&
         collector.x + 32 <= target.x + target.size  &&
@@ -84,6 +89,7 @@ class App extends Component {
 
   gameLoop() {
     this.collectors.forEach( (collector) => {
+      // Mine aluminum if on an asteroid
       if( collector.mining >= 0 ) {
         collector.miningCountdown -= 1;
         if( collector.miningCountdown <= 0 ) {
@@ -91,9 +97,10 @@ class App extends Component {
           collector.miningCountdown = world.miningCountdown;
         }
       }
+      // Move towards a target if selected
       if( collector.target >= 0 ) {
         if( ! this.collectorAtTarget(collector, this.asteroids[collector.target]) ) {
-          // Move towards it
+          // Move towards target
           const target = this.asteroids[collector.target];
           if( collector.x >= target.x + 2 ) {
             collector.x -= 1;
