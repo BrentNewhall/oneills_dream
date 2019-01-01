@@ -1,6 +1,8 @@
+import ACTION_ADD_ALUMINUM from './global';
+
 function reducers( state, action ) {
     switch( action.type ) {
-        case 'ADD_ALUMINUM':
+        case ACTION_ADD_ALUMINUM:
             console.log( "Aluminimum added!" );
             return state;
         default:
