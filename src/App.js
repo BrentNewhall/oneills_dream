@@ -3,6 +3,9 @@ import { createStore } from 'redux';
 import './App.css';
 
 import world from './global';
+import { actionMined } from './actions';
+import reducers from './reducers';
+const store = createStore( reducers );
 
 class App extends Component {
   constructor( props ) {
@@ -26,7 +29,8 @@ class App extends Component {
     this.collectors.push({
       x: 250,
       y: 250,
-      target: -1
+      target: -1,
+      mining: -1
     });
     this.selectedCollector = -1;
     // Define functions
@@ -73,13 +77,13 @@ class App extends Component {
         if( ! this.collectorAtTarget(collector, this.asteroids[collector.target]) ) {
           // Move towards it
           const target = this.asteroids[collector.target];
-          if( collector.x >= target.x ) {
+          if( collector.x >= target.x + 2 ) {
             collector.x -= 1;
           }
           else if( collector.x <= target.x + target.size ) {
             collector.x += 1;
           }
-          if( collector.y >= target.y ) {
+          if( collector.y >= target.y + 2 ) {
             collector.y -= 1;
           }
           else if( collector.y <= target.y + target.size ) {
@@ -88,7 +92,9 @@ class App extends Component {
           this.forceUpdate();
         } else {
           // Reached target
+          collector.mining = collector.target;
           collector.target = -1;
+          store.dispatch( actionMined( { amount: 5 } ) );
         }
       }
     })
