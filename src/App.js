@@ -30,7 +30,8 @@ class App extends Component {
       x: 250,
       y: 250,
       target: -1,
-      mining: -1
+      mining: -1,
+      miningCountdown: 0
     });
     this.selectedCollector = -1;
     // Define functions
@@ -73,6 +74,13 @@ class App extends Component {
 
   gameLoop() {
     this.collectors.forEach( (collector) => {
+      if( collector.mining >= 0 ) {
+        collector.miningCountdown -= 1;
+        if( collector.miningCountdown <= 0 ) {
+          store.dispatch( actionMined( { amount: 5 } ) );
+          collector.miningCountdown = world.miningCountdown;
+        }
+      }
       if( collector.target >= 0 ) {
         if( ! this.collectorAtTarget(collector, this.asteroids[collector.target]) ) {
           // Move towards it
@@ -94,7 +102,7 @@ class App extends Component {
           // Reached target
           collector.mining = collector.target;
           collector.target = -1;
-          store.dispatch( actionMined( { amount: 5 } ) );
+          collector.miningCountdown = world.miningCountdown;
         }
       }
     })
