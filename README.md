@@ -13,6 +13,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 | Day | Time |
 |-----|------|
 | 2018-12-31 | 1:00 |
+| 2019-01-01 | 1:15 |
 
 ## Resources
 
