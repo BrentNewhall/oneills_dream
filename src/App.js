@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 import './App.css';
 
 import world from './global';
 import { actionMined } from './actions';
 import reducers from './reducers';
-const store = createStore( reducers );
+const initialState = { aluminum: 0 };
+const store = createStore( reducers, initialState );
+
+class StatusBar extends Component {
+  render() {
+    /* const { aluminum } = this.context.store.getState(); */
+    const aluminum = this.props.store.getState().aluminum;
+    return <div className='StatusBar'>Aluminum: {aluminum}</div>;
+  }
+}
 
 class App extends Component {
   constructor( props ) {
@@ -141,9 +151,12 @@ class App extends Component {
         src='images/reticule.png' />
     return (
       <div className="Space">
-        {asteroidObjects}
-        {collectorObjects}
-        {reticuleObject}
+        <Provider store={store}>
+          {asteroidObjects}
+          {collectorObjects}
+          {reticuleObject}
+          <StatusBar store={store} />
+        </Provider>
       </div>
     );
   }

@@ -6,7 +6,7 @@ function reducers( state, action ) {
             console.log( action.data.amount + " aluminimum added!" );
             return {
                 ...state,
-                aluminum: action.data.amount
+                aluminum: action.data.amount + state.aluminum
             };
         default:
             return state;
