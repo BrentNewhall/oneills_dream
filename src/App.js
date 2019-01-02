@@ -4,7 +4,7 @@ import './App.css';
 
 import StatusBarStateful from './StatusBar'
 import world from './global';
-import { actionMined } from './actions';
+import { actionMined, actionPlacingColony } from './actions';
 
 
 /* Main game world */
@@ -26,6 +26,8 @@ class World extends Component {
       }
       this.asteroids.push( asteroid );
     }
+    // Create colonies
+    this.colonies = [];
     // Create collectors
     this.collectors = [];
     this.collectors.push({
@@ -77,9 +79,16 @@ class World extends Component {
     }
   }
 
-  spaceClicked() {
+  spaceClicked(e) {
+    // Place colony
     if( this.props.placingColony ) {
-      alert( "Place colony here!" );
+      this.colonies.push({
+        x: e.pageX - (world.colonyImageSize / 2),
+        y: e.pageY - (world.colonyImageSize / 2)
+      });
+      this.props.actionMined( 0 - world.aluminumForColony );
+      this.props.actionPlacingColony( false );
+      this.forceUpdate();
     }
   }
 
@@ -136,6 +145,18 @@ class World extends Component {
           key={'asteroid' + index} className='asteroid'
           src='images/asteroid.png' onClick={this.asteroidClicked} />
     });
+    // Set up colony images
+    const colonyObjects = this.colonies.map( (colony, index) => {
+      const colonyStyle = {
+        left: colony.x,
+        top: colony.y,
+        width: world.colonyImageSize,
+        height: world.colonyImageSize
+      }
+      return <img style={colonyStyle} alt={'Colony ' + index}
+          key={'colony' + index} className='colony'
+          src='images/Colony.png' />
+    });
     // Set up collector images
     const collectorObjects = this.collectors.map( (collector, index) => {
       const collectorStyle = {
@@ -155,8 +176,9 @@ class World extends Component {
         key='Selector reticule' className='reticule'
         src='images/reticule.png' />
     return (
-      <div className="Space" onClick={this.spaceClicked}>
+      <div className="Space" onClick={(e) => this.spaceClicked(e)}>
         {asteroidObjects}
+        {colonyObjects}
         {collectorObjects}
         {reticuleObject}
         <StatusBarStateful />
@@ -176,7 +198,8 @@ const mapStateToProps = state => ({
   placingColony: state.placingColony
 });
 const mapDispatchToProps = dispatch => ({
-  actionMined: amount => dispatch( actionMined( { amount: amount } ) )
+  actionMined: amount => dispatch( actionMined( { amount: amount } ) ),
+  actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
 });
 const WorldStateful = connect(mapStateToProps, mapDispatchToProps)(World);
 

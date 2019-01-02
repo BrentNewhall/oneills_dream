@@ -11,18 +11,23 @@
   z-index: 10;
 }
 
+.colony {
+  position: absolute;
+  z-index: 20
+}
+
 .collector {
   position: absolute;
   width: 32px;
   height: 32px;
-  z-index: 20;
+  z-index: 30;
 }
 
 .reticule {
   position: absolute;
   width: 32px;
   height: 32px;
-  z-index: 30;
+  z-index: 40;
   opacity: 0.75;
 }
 

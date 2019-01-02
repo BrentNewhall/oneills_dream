@@ -18,14 +18,14 @@ class StatusBar extends Component {
     }
   
     render() {
-      let colonyImage = 'colony-disabled.png';
+      let colonyImage = 'colony-icon-disabled.png';
       let buildColonyDisabled = 'disabled';
       if( this.props.placingColony ) {
-        colonyImage = 'colony-placing.png';
+        colonyImage = 'colony-icon-placing.png';
       }
       else if( this.props.aluminum >= world.aluminumForColony ) {
         buildColonyDisabled = '';
-        colonyImage = 'colony.png';
+        colonyImage = 'colony-icon.png';
       }
       return <div className='StatusBar'>
         <span className='actions'><button disabled={buildColonyDisabled} onClick={this.buildColony}><img src={'/images/' + colonyImage} className='ActionButton' alt='Build colony' /></button></span>
