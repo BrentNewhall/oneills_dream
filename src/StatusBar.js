@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import './App.css';
 
 import { actionMined } from './actions';
+import world from './global';
 
 /* Displays status bar (amount of aluminum) */
 
@@ -19,7 +20,7 @@ class StatusBar extends Component {
     render() {
       let colonyImage = 'colony-disabled.png';
       let buildColonyDisabled = 'disabled';
-      if( this.props.aluminum >= 20 ) {
+      if( this.props.aluminum >= world.aluminumForColony ) {
         buildColonyDisabled = '';
         colonyImage = 'colony.png';
       }
