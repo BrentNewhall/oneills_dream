@@ -19,5 +19,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 The collector ship and asteroid are from
 [Space Shooter Assets](https://opengameart.org/content/space-shooter-assets)
-on [OpenGameArt.org](https://opengameart.org). The space background is a public
+on [OpenGameArt.org](https://opengameart.org). The "build colony" icon is from
+[Game-icons.net](https://game-icons.net). The space background is a public
 domain image from NASA. I drew the blue targeting reticule myself in GIMP.
