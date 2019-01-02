@@ -8,8 +8,26 @@ import { actionMined } from './actions';
 /* Displays status bar (amount of aluminum) */
 
 class StatusBar extends Component {
+  constructor( props ) {
+    super( props );
+    this.buildColony = this.buildColony.bind(this);
+  }
+
+  buildColony() {
+    alert( "Building colony." );
+  }
+
   render() {
-    return <div className='StatusBar'>Aluminum: {this.props.aluminum}</div>;
+    let colonyImage = 'colony-disabled.png';
+    let buildColonyDisabled = 'disabled';
+    if( this.props.aluminum >= 20 ) {
+      buildColonyDisabled = '';
+      colonyImage = 'colony.png';
+    }
+    return <div className='StatusBar'>
+      <span className='actions'><button disabled={buildColonyDisabled} onClick={this.buildColony}><img src={'/images/' + colonyImage} className='ActionButton' alt='Build colony' /></button></span>
+      <span className='stats'>Aluminum: {this.props.aluminum}</span>
+    </div>;
   }
 }
 
