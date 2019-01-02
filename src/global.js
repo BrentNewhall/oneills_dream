@@ -6,5 +6,6 @@ const world = {
 }
 
 export const ACTION_ADD_ALUMINUM = 'ADD_ALUMINUM';
+export const ACTION_PLACING_COLONY = 'PLACING_COLONY';
 
 export default world;

@@ -1,4 +1,4 @@
-import ACTION_ADD_ALUMINUM from './global';
+import { ACTION_ADD_ALUMINUM, ACTION_PLACING_COLONY } from './global';
 
 function reducers( state, action ) {
     switch( action.type ) {
@@ -7,6 +7,11 @@ function reducers( state, action ) {
                 ...state,
                 aluminum: action.data.amount + state.aluminum
             };
+        case ACTION_PLACING_COLONY:
+            return {
+                ...state,
+                placingColony: action.placement
+            }
         default:
             return state;
     }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 
-import { actionMined } from './actions';
+import { actionMined, actionPlacingColony } from './actions';
 import world from './global';
 
 /* Displays status bar (amount of aluminum) */
@@ -14,13 +14,16 @@ class StatusBar extends Component {
     }
   
     buildColony() {
-      alert( "Building colony." );
+      this.props.actionPlacingColony( true );
     }
   
     render() {
       let colonyImage = 'colony-disabled.png';
       let buildColonyDisabled = 'disabled';
-      if( this.props.aluminum >= world.aluminumForColony ) {
+      if( this.props.placingColony ) {
+        colonyImage = 'colony-placing.png';
+      }
+      else if( this.props.aluminum >= world.aluminumForColony ) {
         buildColonyDisabled = '';
         colonyImage = 'colony.png';
       }
@@ -32,10 +35,12 @@ class StatusBar extends Component {
   }
   
   const mapStateToProps = state => ({
-    aluminum: state.aluminum
+    aluminum: state.aluminum,
+    placingColony: state.placingColony
   });
   const mapDispatchToProps = dispatch => ({
-    actionMined: amount => dispatch( actionMined( { amount } ) )
+    actionMined: amount => dispatch( actionMined( { amount } ) ),
+    actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
   });
   const StatusBarStateful = connect(mapStateToProps, mapDispatchToProps)(StatusBar);
 

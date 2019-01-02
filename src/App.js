@@ -40,6 +40,7 @@ class World extends Component {
     this.collectorClicked = this.collectorClicked.bind(this);
     this.collectorAtTarget = this.collectorAtTarget.bind(this);
     this.asteroidClicked = this.asteroidClicked.bind(this);
+    this.spaceClicked = this.spaceClicked.bind(this);
     this.gameLoop = this.gameLoop.bind(this);
     // Set up game loop to run at 60 fps
     setInterval( this.gameLoop, 16 );
@@ -76,14 +77,22 @@ class World extends Component {
     }
   }
 
+  spaceClicked() {
+    if( this.props.placingColony ) {
+      alert( "Place colony here!" );
+    }
+  }
+
   gameLoop() {
     this.collectors.forEach( (collector) => {
       // Mine aluminum if on an asteroid
       if( collector.mining >= 0 ) {
         collector.miningCountdown -= 1;
+        //console.log( "Mining countdown " + collector.miningCountdown );
         if( collector.miningCountdown <= 0 ) {
           this.props.actionMined( 5 );
           collector.miningCountdown = world.miningCountdown;
+          this.forceUpdate();
         }
       }
       // Move towards a target if selected
@@ -146,7 +155,7 @@ class World extends Component {
         key='Selector reticule' className='reticule'
         src='images/reticule.png' />
     return (
-      <div className="Space">
+      <div className="Space" onClick={this.spaceClicked}>
         {asteroidObjects}
         {collectorObjects}
         {reticuleObject}
@@ -163,10 +172,11 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  aluminum: state.aluminum
+  aluminum: state.aluminum,
+  placingColony: state.placingColony
 });
 const mapDispatchToProps = dispatch => ({
-  actionMined: amount => dispatch( actionMined( { amount } ) )
+  actionMined: amount => dispatch( actionMined( { amount: amount } ) )
 });
 const WorldStateful = connect(mapStateToProps, mapDispatchToProps)(World);
 
