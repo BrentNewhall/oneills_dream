@@ -1,26 +1,21 @@
 import React, { Component } from 'react';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
 import './App.css';
 
 import world from './global';
 import { actionMined } from './actions';
-import reducers from './reducers';
-const initialState = { aluminum: 0 };
-const store = createStore( reducers, initialState );
 
 /* Displays status bar (amount of aluminum) */
 
 class StatusBar extends Component {
   render() {
-    const aluminum = this.props.store.getState().aluminum;
-    return <div className='StatusBar'>Aluminum: {aluminum}</div>;
+    return <div className='StatusBar'>Aluminum: {this.props.aluminum}</div>;
   }
 }
 
 /* Main game world */
 
-class App extends Component {
+class World extends Component {
   constructor( props ) {
     super( props );
     this.state = {
@@ -54,6 +49,7 @@ class App extends Component {
     this.gameLoop = this.gameLoop.bind(this);
     // Set up game loop to run at 60 fps
     setInterval( this.gameLoop, 16 );
+    console.log( this );
   }
 
   collectorClicked(e) {
@@ -93,7 +89,7 @@ class App extends Component {
       if( collector.mining >= 0 ) {
         collector.miningCountdown -= 1;
         if( collector.miningCountdown <= 0 ) {
-          store.dispatch( actionMined( { amount: 5 } ) );
+          this.props.actionMined( 5 );
           collector.miningCountdown = world.miningCountdown;
         }
       }
@@ -158,15 +154,28 @@ class App extends Component {
         src='images/reticule.png' />
     return (
       <div className="Space">
-        <Provider store={store}>
-          {asteroidObjects}
-          {collectorObjects}
-          {reticuleObject}
-          <StatusBar store={store} />
-        </Provider>
+        {asteroidObjects}
+        {collectorObjects}
+        {reticuleObject}
+        <StatusBarStateful />
       </div>
     );
   }
 }
+
+class App extends Component {
+  render() {
+    return ( <WorldStateful /> );
+  }
+}
+
+const mapStateToProps = state => ({
+  aluminum: state.aluminum
+});
+const mapDispatchToProps = dispatch => ({
+  actionMined: amount => dispatch( actionMined( { amount } ) )
+});
+const StatusBarStateful = connect(mapStateToProps, mapDispatchToProps)(StatusBar);
+const WorldStateful = connect(mapStateToProps, mapDispatchToProps)(World);
 
 export default App;
