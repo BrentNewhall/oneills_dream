@@ -49,11 +49,11 @@ class StatusBar extends Component {
       return <div className='StatusBar'>
         <span className='actions'>
           <button disabled={buildCollectorDisabled} onClick={this.buildCollector}>
-            <img src={'/images/' + collectorImage} className='ActionButton'
+            <img src={'images/' + collectorImage} className='ActionButton'
                 alt='Build collector' />
           </button>
           <button disabled={buildColonyDisabled} onClick={this.buildColony}>
-            <img src={'/images/' + colonyImage} className='ActionButton'
+            <img src={'images/' + colonyImage} className='ActionButton'
                 alt='Build colony' />
           </button>
         </span>

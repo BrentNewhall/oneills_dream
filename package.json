@@ -16,7 +16,7 @@
     "eject": "react-scripts eject",
     "deploy": "./deploy.sh"
   },
-  "homepage": "https://s3.amazonaws.com/oneills_dream/",
+  "homepage": "https://s3.amazonaws.com/oneills-dream/",
   "eslintConfig": {
     "extends": "react-app"
   },

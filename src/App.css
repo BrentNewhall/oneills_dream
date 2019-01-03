@@ -2,7 +2,7 @@
   position: absolute;
   width: 1050px;
   height: 1050px;
-  background-image: url('/images/space_bg.jpg');
+  /* background-image: url('%PUBLIC_URL%/images/space_bg.jpg'); */
   background-size: cover;
 }
 

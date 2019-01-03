@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 
+import bgImage from './space_bg.jpg'
 import StatusBarStateful from './StatusBar'
 import world from './global';
 import {
@@ -202,8 +203,12 @@ class World extends Component {
     const reticuleObject = <img style={reticuleStle} alt='Selector reticule'
         key='Selector reticule' className='reticule'
         src='images/reticule.png' />
+    const spaceStyle = {
+      backgroundImage: 'url(' + bgImage + ')'
+    }
     return (
-      <div className="Space" onClick={(e) => this.spaceClicked(e)}>
+      <div className="Space" style={spaceStyle}
+          onClick={(e) => this.spaceClicked(e)}>
         {asteroidObjects}
         {colonyObjects}
         {collectorObjects}
