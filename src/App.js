@@ -21,7 +21,7 @@ class World extends Component {
     for( let i = 0; i < 30; i++ ) {
       const asteroid = {
         x: Math.random() * world.width,
-        y: Math.random() * world.height,
+        y: Math.random() * (world.height * 0.95), // No asteroids near bottom
         size: Math.random() * 30 + 40
       }
       this.asteroids.push( asteroid );
