@@ -18,8 +18,14 @@ class StatusBar extends Component {
     }
   
     render() {
+      let collectorImage = 'collector-icon-disabled.png';
       let colonyImage = 'colony-icon-disabled.png';
+      let buildCollectorDisabled = 'disabled';
       let buildColonyDisabled = 'disabled';
+      if( this.props.aluminum >= world.aluminumForCollector ) {
+        buildCollectorDisabled = '';
+        collectorImage = 'collector-icon.png';
+      }
       if( this.props.placingColony ) {
         colonyImage = 'colony-icon-placing.png';
       }
@@ -28,7 +34,16 @@ class StatusBar extends Component {
         colonyImage = 'colony-icon.png';
       }
       return <div className='StatusBar'>
-        <span className='actions'><button disabled={buildColonyDisabled} onClick={this.buildColony}><img src={'/images/' + colonyImage} className='ActionButton' alt='Build colony' /></button></span>
+        <span className='actions'>
+          <button disabled={buildCollectorDisabled} onClick={this.buildCollector}>
+            <img src={'/images/' + collectorImage} className='ActionButton'
+                alt='Build collector' />
+          </button>
+          <button disabled={buildColonyDisabled} onClick={this.buildColony}>
+            <img src={'/images/' + colonyImage} className='ActionButton'
+                alt='Build colony' />
+          </button>
+        </span>
         <span className='stats'>Aluminum: {this.props.aluminum}</span>
       </div>;
     }

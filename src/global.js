@@ -2,6 +2,7 @@ const world = {
     height: 1000,
     width: 1000,
     miningCountdown: 250,
+    aluminumForCollector: 10,
     aluminumForColony: 20,
     colonyImageSize: 200
 }
