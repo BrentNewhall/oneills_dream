@@ -16,6 +16,7 @@ This project was bootstrapped with
 | 2018-12-31 | 1:00 |
 | 2019-01-01 | 1:15 |
 | 2019-01-02 | 2:00 |
+| 2019-01-03 | 0:30 |
 
 ## Resources
 

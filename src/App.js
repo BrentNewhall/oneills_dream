@@ -87,8 +87,8 @@ class World extends Component {
     // Place collector
     if( this.props.placingCollector ) {
       this.collectors.push({
-        x: e.pageX,
-        y: e.pageY,
+        x: e.pageX - (world.collectorImageSize / 2),
+        y: e.pageY - (world.collectorImageSize / 2),
         target: -1,
         mining: -1,
         miningCountdown: 0
