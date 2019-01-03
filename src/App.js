@@ -21,10 +21,12 @@ class World extends Component {
     // Create asteroids
     this.asteroids = [];
     for( let i = 0; i < 30; i++ ) {
+      const size = Math.random() * 30 + 40;
       const asteroid = {
         x: Math.random() * world.width,
         y: Math.random() * (world.height * 0.95), // No asteroids near bottom
-        size: Math.random() * 30 + 40
+        size: size,
+        aluminum: size
       }
       this.asteroids.push( asteroid );
     }
@@ -115,6 +117,12 @@ class World extends Component {
         //console.log( "Mining countdown " + collector.miningCountdown );
         if( collector.miningCountdown <= 0 ) {
           this.props.actionMined( 5 );
+          this.asteroids[collector.mining].aluminum -= 5;
+          // If asteroid is used up, stop mining it
+          if( this.asteroids[collector.mining].aluminum < 0 ) {
+            this.asteroids[collector.mining].aluminum = 0;
+            collector.mining = -1;
+          }
           collector.miningCountdown = world.miningCountdown;
           this.forceUpdate();
         }
@@ -156,9 +164,13 @@ class World extends Component {
         height: asteroid.size,
         width: asteroid.size
       }
+      let asteroidImage = 'images/asteroid.png';
+      if( asteroid.aluminum <= 0 ) {
+        asteroidImage = 'images/asteroid-depleted.png';
+      }
       return <img style={asteroidStyle} alt={'Asteroid ' + index}
           key={'asteroid' + index} className='asteroid'
-          src='images/asteroid.png' onClick={this.asteroidClicked} />
+          src={asteroidImage} onClick={this.asteroidClicked} />
     });
     // Set up colony images
     const colonyObjects = this.colonies.map( (colony, index) => {
