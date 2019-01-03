@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 
-import { actionMined, actionPlacingColony } from './actions';
+import {
+  actionMined,
+  actionPlacingCollector,
+  actionPlacingColony
+} from './actions';
 import world from './global';
 
 /* Displays status bar (amount of aluminum) */
@@ -10,7 +14,13 @@ import world from './global';
 class StatusBar extends Component {
     constructor( props ) {
       super( props );
+      // Bind functions
+      this.buildCollector = this.buildCollector.bind(this);
       this.buildColony = this.buildColony.bind(this);
+    }
+  
+    buildCollector() {
+      this.props.actionPlacingCollector( true );
     }
   
     buildColony() {
@@ -22,7 +32,10 @@ class StatusBar extends Component {
       let colonyImage = 'colony-icon-disabled.png';
       let buildCollectorDisabled = 'disabled';
       let buildColonyDisabled = 'disabled';
-      if( this.props.aluminum >= world.aluminumForCollector ) {
+      if( this.props.placingCollector ) {
+        collectorImage = 'collector-icon-placing.png';
+      }
+      else if( this.props.aluminum >= world.aluminumForCollector ) {
         buildCollectorDisabled = '';
         collectorImage = 'collector-icon.png';
       }
@@ -51,10 +64,12 @@ class StatusBar extends Component {
   
   const mapStateToProps = state => ({
     aluminum: state.aluminum,
+    placingCollector: state.placingCollector,
     placingColony: state.placingColony
   });
   const mapDispatchToProps = dispatch => ({
     actionMined: amount => dispatch( actionMined( { amount } ) ),
+    actionPlacingCollector: value => dispatch( actionPlacingCollector( value ) ),
     actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
   });
   const StatusBarStateful = connect(mapStateToProps, mapDispatchToProps)(StatusBar);

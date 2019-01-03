@@ -4,7 +4,9 @@ import './App.css';
 
 import StatusBarStateful from './StatusBar'
 import world from './global';
-import { actionMined, actionPlacingColony } from './actions';
+import {
+  actionMined, actionPlacingCollector, actionPlacingColony
+} from './actions';
 
 
 /* Main game world */
@@ -80,8 +82,21 @@ class World extends Component {
   }
 
   spaceClicked(e) {
+    // Place collector
+    if( this.props.placingCollector ) {
+      this.collectors.push({
+        x: e.pageX,
+        y: e.pageY,
+        target: -1,
+        mining: -1,
+        miningCountdown: 0
+      });
+      this.props.actionMined( 0 - world.aluminumForCollector );
+      this.props.actionPlacingCollector( false );
+      this.forceUpdate();
+    }
     // Place colony
-    if( this.props.placingColony ) {
+    else if( this.props.placingColony ) {
       this.colonies.push({
         x: e.pageX - (world.colonyImageSize / 2),
         y: e.pageY - (world.colonyImageSize / 2)
@@ -195,10 +210,12 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   aluminum: state.aluminum,
+  placingCollector: state.placingCollector,
   placingColony: state.placingColony
 });
 const mapDispatchToProps = dispatch => ({
   actionMined: amount => dispatch( actionMined( { amount: amount } ) ),
+  actionPlacingCollector: value => dispatch( actionPlacingCollector( value ) ),
   actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
 });
 const WorldStateful = connect(mapStateToProps, mapDispatchToProps)(World);
