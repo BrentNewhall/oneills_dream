@@ -4,7 +4,6 @@ import {
   ACTION_PLACING_COLLECTOR,
   ACTION_PLACING_MECHA,
   ACTION_PLACING_COLONY,
-  ACTION_ADD_POPULATION
 } from './global';
 
 export function actionMined( data ) {

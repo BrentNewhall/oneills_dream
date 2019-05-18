@@ -6,28 +6,36 @@ import bgImage from './space_bg.jpg'
 import StatusBarStateful from './StatusBar'
 import world from './global';
 import {
-  actionMined, actionPlacingCollector, actionPlacingColony
+  actionMined,
+  actionAddPopulation,
+  actionPlacingCollector,
+  actionPlacingMecha,
+  actionPlacingColony,
 } from './actions';
+import Ship from './Ship';
+import Pirate from './Pirate';
+import Mecha from './Mecha';
+import Fleet from './Fleet';
 
 
 /* Main game world */
 
-class World extends Component {
+export class World extends Component {
   constructor( props ) {
     super( props );
     this.state = {
-      reticuleX: -30,
-      reticuleY: -30
+      reticle: { x: -30, y: -30, width: world.reticleSize, height: world.reticleSize }
     }
     // Create asteroids
     this.asteroids = [];
-    for( let i = 0; i < 30; i++ ) {
+    for( let i = 0; i < 60; i++ ) {
       const size = Math.random() * 30 + 40;
       const asteroid = {
         x: Math.random() * world.width,
         y: Math.random() * (world.height * 0.95), // No asteroids near bottom
-        size: size,
-        aluminum: size
+        width: size,
+        height: size,
+        aluminum: size,
       }
       this.asteroids.push( asteroid );
     }
@@ -35,52 +43,73 @@ class World extends Component {
     this.colonies = [];
     // Create collectors
     this.collectors = [];
-    this.collectors.push({
-      x: 250,
-      y: 250,
-      target: -1,
-      mining: -1,
-      miningCountdown: 0
-    });
     this.selectedCollector = -1;
+    this.createCollector( 250, 250 );
+    // Mecha
+    this.playerMecha = [];
+    this.selectedMecha = -1;
+    // Pirates
+    this.pirates = [];
+    // Shuttles
+    this.shuttles = [];
+    // Fleet
+    this.fleet = new Fleet();
+    // Explosions
+    this.explosions = [];
     // Define functions
-    this.collectorClicked = this.collectorClicked.bind(this);
-    this.collectorAtTarget = this.collectorAtTarget.bind(this);
-    this.asteroidClicked = this.asteroidClicked.bind(this);
-    this.spaceClicked = this.spaceClicked.bind(this);
-    this.gameLoop = this.gameLoop.bind(this);
+    this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
+    this.bindMethodsToThis();
     // Set up game loop to run at 60 fps
     setInterval( this.gameLoop, 16 );
   }
 
+  bindMethodsToThis() {
+    this.collectorClicked = this.collectorClicked.bind(this);
+    this.playerMechaClicked = this.playerMechaClicked.bind(this);
+    this.enemyMechaClicked = this.enemyMechaClicked.bind(this);
+    //this.pirateClicked = this.pirateClicked.bind(this);
+    this.asteroidClicked = this.asteroidClicked.bind(this);
+    this.spaceClicked = this.spaceClicked.bind(this);
+    //this.shipAtTarget = this.shipAtTarget.bind(this);
+    //this.clearReticle = this.clearReticle.bind(this);
+    //this.pirateAttackTarget = this.pirateAttackTarget.bind(this);
+    this.gameLoop = this.gameLoop.bind(this);
+  }
+
+  createCollector( x, y ) {
+    let ship = new Ship();
+    ship.setDimensions( x, y, world.collectorImageSize, world.collectorImageSize );
+    ship.mining = null;
+    ship.miningCountdown = 0;
+    ship.armor = world.collectorArmor;
+    ship.speed = world.collectorSpeed;
+    this.collectors.push( ship );
+  }
+
   collectorClicked(e) {
     this.selectedCollector = parseInt( e.currentTarget.alt.substring( 10 ) );
-    this.setState( { 
-      reticuleX: this.collectors[this.selectedCollector].x,
-      reticuleY: this.collectors[this.selectedCollector].y
-    } );
+    this.setReticle( this.collectors[this.selectedCollector] );
+  }
+
+  playerMechaClicked(e) {
+    this.selectedMecha = parseInt( e.currentTarget.alt.substring( 6 ) );
+    this.setReticle( this.playerMecha[this.selectedMecha] );
+  }
+
+  enemyMechaClicked(e) {
+    if( this.selectedMecha !== -1 ) {
+      let target = parseInt( e.currentTarget.alt.substring( 6 ) );
+      this.playerMecha[this.selectedMecha].setTarget( this.fleet.getShip( target ) );
+    }
   }
 
   asteroidClicked(e) {
     if( this.selectedCollector >= 0  &&
         this.selectedCollector < this.collectors.length ) {
       const index = parseInt( e.currentTarget.alt.substring( 9 ) );
-      this.collectors[this.selectedCollector].target = index;
+      this.collectors[this.selectedCollector].setTarget( this.asteroids[index] );
       this.collectors[this.selectedCollector].mining = -1; // No longer mining
-      // Remove reticule
-      this.setState( { reticuleX: -30, reticuleY: -30 } );
-    }
-  }
-
-  // Returns true if collector is within target's bounding box
-  collectorAtTarget( collector, target ) {
-    if( collector.x >= target.x  &&
-        collector.x + 32 <= target.x + target.size  &&
-        collector.y >= target.y  &&
-        collector.y + 32 <= target.y + target.size ) {
-      return true;
-    } else {
-      return false;
+      this.clearReticle();
     }
   }
 
@@ -111,7 +140,7 @@ class World extends Component {
   }
 
   gameLoop() {
-    this.collectors.forEach( (collector) => {
+    /* this.collectors.forEach( (collector) => {
       // Mine aluminum if on an asteroid
       if( collector.mining >= 0 ) {
         collector.miningCountdown -= 1;
@@ -153,7 +182,7 @@ class World extends Component {
           collector.miningCountdown = world.miningCountdown;
         }
       }
-    })
+    }) */
   }
 
   render() {
@@ -162,8 +191,8 @@ class World extends Component {
       const asteroidStyle = {
         left: asteroid.x,
         top: asteroid.y,
-        height: asteroid.size,
-        width: asteroid.size
+        height: asteroid.width,
+        width: asteroid.height,
       }
       let asteroidImage = 'images/asteroid.png';
       if( asteroid.aluminum <= 0 ) {
