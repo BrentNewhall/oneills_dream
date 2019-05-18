@@ -66,6 +66,7 @@ class Fleet {
             }
         });
         this.cleanupDeadTargets( deadTargets );
+        return deadTargets;
     }
 }
 

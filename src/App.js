@@ -539,7 +539,7 @@ export class World extends Component {
     const reticles = this.getImagesForObject( [this.state.reticle], "reticle", "images/reticule.png", null );
     const pirates = this.getImagesForObject( this.pirates, "pirate", "images/pirate.png", this.pirateClicked );
     const shuttles = this.getImagesForObject( this.shuttles, "shuttle", "images/transport.png", null );
-    const fleet = this.getImagesForObject( this.fleet, "enemy", "images/enemy_mecha.png", this.enemyMechaClicked );
+    const fleet = this.getImagesForObject( this.fleet.getShips(), "enemy", "images/enemy_mecha.png", this.enemyMechaClicked );
     const explosions = this.getExplosionImages( this.explosions );
     const space = { backgroundImage: "url(" + bgImage + ")" };
     return { asteroids, colonies, collectors, mecha, reticles, pirates, shuttles, fleet, explosions, space };
