@@ -8,7 +8,9 @@ import reducers from './reducers';
 import { Provider } from 'react-redux';
 const initialState = {
     aluminum: 0,
+    population: 0,
     placingCollector: false,
+    placingMecha: false,
     placingColony: false
 };
 const store = createStore( reducers, initialState );
