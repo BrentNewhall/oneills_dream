@@ -4,7 +4,9 @@ import './App.css';
 
 import {
   actionMined,
+  actionAddPopulation,
   actionPlacingCollector,
+  actionPlacingMecha,
   actionPlacingColony
 } from './actions';
 import world from './global';
@@ -16,11 +18,16 @@ class StatusBar extends Component {
       super( props );
       // Bind functions
       this.buildCollector = this.buildCollector.bind(this);
+      this.buildMecha = this.buildMecha.bind(this);
       this.buildColony = this.buildColony.bind(this);
     }
   
     buildCollector() {
       this.props.actionPlacingCollector( true );
+    }
+  
+    buildMecha() {
+      this.props.actionPlacingMecha( true );
     }
   
     buildColony() {
@@ -29,8 +36,10 @@ class StatusBar extends Component {
   
     render() {
       let collectorImage = 'collector-icon-disabled.png';
+      let mechaImage = 'mecha-icon-disabled.png';
       let colonyImage = 'colony-icon-disabled.png';
       let buildCollectorDisabled = 'disabled';
+      let buildMechaDisabled = 'disabled';
       let buildColonyDisabled = 'disabled';
       if( this.props.placingCollector ) {
         collectorImage = 'collector-icon-placing.png';
@@ -38,6 +47,13 @@ class StatusBar extends Component {
       else if( this.props.aluminum >= world.aluminumForCollector ) {
         buildCollectorDisabled = '';
         collectorImage = 'collector-icon.png';
+      }
+      if( this.props.placingMecha ) {
+        collectorImage = 'mecha-icon-placing.png';
+      }
+      else if( this.props.aluminum >= world.aluminumForMecha ) {
+        buildMechaDisabled = '';
+        mechaImage = 'mecha-icon.png';
       }
       if( this.props.placingColony ) {
         colonyImage = 'colony-icon-placing.png';
@@ -52,24 +68,35 @@ class StatusBar extends Component {
             <img src={'images/' + collectorImage} className='ActionButton'
                 alt='Build collector' />
           </button>
+          <button disabled={buildMechaDisabled} onClick={this.buildMecha}>
+            <img src={'images/' + mechaImage} className='ActionButton'
+                alt='Build mecha' />
+          </button>
           <button disabled={buildColonyDisabled} onClick={this.buildColony}>
             <img src={'images/' + colonyImage} className='ActionButton'
                 alt='Build colony' />
           </button>
         </span>
-        <span className='stats'>Aluminum: {this.props.aluminum}</span>
+        <span className='stats'>
+          Aluminum: {this.props.aluminum} &nbsp;
+          Population: {this.props.population}
+        </span>
       </div>;
     }
   }
   
   const mapStateToProps = state => ({
     aluminum: state.aluminum,
+    population: state.population,
     placingCollector: state.placingCollector,
+    placingMecha: state.placingMecha,
     placingColony: state.placingColony
   });
   const mapDispatchToProps = dispatch => ({
-    actionMined: amount => dispatch( actionMined( { amount } ) ),
+    actionMined: amount => dispatch( actionMined( { amount: amount } ) ),
+    actionAddPopulation: amount => dispatch( actionAddPopulation( { amount: amount } ) ),
     actionPlacingCollector: value => dispatch( actionPlacingCollector( value ) ),
+    actionPlacingMecha: value => dispatch( actionPlacingMecha( value ) ),
     actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
   });
   const StatusBarStateful = connect(mapStateToProps, mapDispatchToProps)(StatusBar);

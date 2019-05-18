@@ -573,7 +573,9 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   aluminum: state.aluminum,
+  population: state.population,
   placingCollector: state.placingCollector,
+  placingMecha: state.placingMecha,
   placingColony: state.placingColony
 });
 const mapDispatchToProps = dispatch => ({
