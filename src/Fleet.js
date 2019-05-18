@@ -68,3 +68,5 @@ class Fleet {
         this.cleanupDeadTargets( deadTargets );
     }
 }
+
+export default Fleet;
