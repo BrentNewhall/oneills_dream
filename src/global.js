@@ -11,11 +11,13 @@ const world = {
     reticleSize: 32,
     colonyImageWidth: 265,
     colonyImageHeight: 208,
-    pirateAttackCountdown: 50,
-    pirateAttackPower: 10,
-    pirateSpeed: 0.2,
-    pirateImageSize: 61,
-    pirateArmor: 50,
+    pirate: {
+        attackCountdown: 50,
+        attackPower: 10,
+        speed: 0.2,
+        imageSize: 61,
+        armor: 50,
+    },
     newPirateEveryThisSeconds: 10, //60
     mechaAttackCountdown: 50,
     mechaAttackPower: 10,
@@ -24,9 +26,11 @@ const world = {
     mechaArmor: 100,
     explosionSize: 64,
     explosionLength: 16,
-    shuttleWidth: 64,
-    shuttleHeight: 27,
-    shuttleSpeed: 1,
+    shuttle: {
+        width: 64,
+        height: 27,
+        speed: 1,
+    },
     newFleetEveryThisSeconds: 15,
 }
 

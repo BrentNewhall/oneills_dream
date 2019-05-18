@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Spritesheet from 'react-responsive-spritesheet';
 import './App.css';
 
 import bgImage from './space_bg.jpg'
@@ -13,6 +14,7 @@ import {
   actionPlacingColony,
 } from './actions';
 import Ship from './Ship';
+import Shuttle from './Shuttle';
 import Pirate from './Pirate';
 import Mecha from './Mecha';
 import Fleet from './Fleet';
@@ -208,7 +210,252 @@ export class World extends Component {
     });
   }
 
+  createShuttle( seconds ) {
+    if( this.colonies.length > 0  &&  seconds % 10 === 0  &&  this.shuttles.length === 0 ) {
+      const targetColony = parseInt( Math.random() * this.colonies.length );
+      const newShuttle = new Shuttle( targetColony );
+      this.shuttles.push( newShuttle );
+    }
+  }
+
+  shuttleOffload( shuttle ) {
+    shuttle.colonyLoading--;
+    if( shuttle.colonyLoading <= 0 ) {
+      this.colonies[shuttle.targetColony].population += 100;
+      this.props.actionAddPopulation( 100 );
+    }
+  }
+
+  moveShuttleTowardsEarth( shuttle, shuttleIndex ) {
+    const earth = { x: 2500, y: 500, width: 16, height: 16 };
+    if( shuttle.distance( earth ) <= 32 ) {
+      this.shuttles.splice( shuttleIndex, 1 );
+    }
+    else {
+      shuttle.moveTowardsTarget( earth );
+      this.forceUpdate();
+    }
+  }
+
+  updateShuttles() {
+    this.shuttles.forEach( (shuttle, shuttleIndex) => {
+      if( shuttle.targetColony !== null  &&  ! shuttle.offloading ) {
+        if( shuttle.distance( this.colonies[shuttle.targetColony] ) <= 50 ) {
+          shuttle.offloading = true;
+        }
+        else {
+          shuttle.moveTowardsTarget( this.colonies[shuttle.targetColony] );
+          this.forceUpdate();
+        }
+      }
+      else if( shuttle.offloading ) {
+        if( shuttle.colonyLoading <= 0 ) {
+          this.moveShuttleTowardsEarth( shuttle, shuttleIndex );
+          this.forceUpdate();
+        }
+        else {
+          this.shuttleOffload( shuttle );
+        }
+      }
+    });
+  }
+
+  createPirates( time ) {
+    if( time !== 0  &&  time % world.newPirateEveryThisSeconds === 0 ) {
+      const y = parseInt(Math.random() * world.height);
+      if( this.pirates.length === 0 ) {
+        const pirate = new Pirate();
+        pirate.setDimensions( -50, y, world.pirate.imageSize, world.pirate.imageSize );
+        pirate.attackCountdownMax = world.pirate.attackCountdown;
+        pirate.attackCountdown = 0;
+        pirate.attackPower = world.pirate.attackPower
+        pirate.armor = world.pirate.armor;
+        pirate.speed = world.pirate.speed;
+        this.pirates.push( pirate );
+      }
+    }
+  }
+
+  pirateAttackTarget( pirate ) {
+    if( pirate.distance( this.collectors[pirate.target] ) < 90 ) {
+      if( pirate.attackCountdown > 0 ) {
+        pirate.attackCountdown -= 1;
+      }
+      else {
+        pirate.attackCountdown = world.pirate.attackCountdown;
+        this.collectors[pirate.target].armor -= world.pirate.attackAmount;
+        this.addExplosion( this.explosions,
+          this.collectors[pirate.target] );
+        if( this.collectors[pirate.target].armor <= 0 ) {
+          this.collectors.splice( pirate.target, 1 );
+          this.selectedCollector = -1;
+          pirate.target = -2;
+          this.forceUpdate();
+        }
+      }
+    }
+  }
+
+  collectorMineAluminum( collector ) {
+    // Mine aluminum if on asteroid
+    if( collector.mining !== null ) {
+      collector.miningCountdown -= 1;
+      if( collector.miningCountdown <= 0 ) {
+        this.props.actionMined( 1 );
+        collector.mining.aluminum -= 1;
+        // If asteroid is used up, stop mining it
+        if( collector.mining.aluminum <= 0 ) {
+          collector.mining.aluminum = 0;
+          collector.mining = null;
+        }
+        collector.miningCountdown = world.miningCountdown;
+        this.forceUpdate();
+      }
+    }
+  }
+
+  collectorMoveTowardsTarget( collector ) {
+    if( collector.target !== null ) {
+      if( ! collector.atTarget( collector.target, 5 ) ) {
+        collector.moveTowardsTarget( collector.target );
+        this.forceUpdate();
+      }
+      else {
+        // Reached target
+        collector.mining = collector.target;
+        collector.target = null;
+        collector.miningCountdown = world.miningCountdown;
+      }
+    }
+  }
+
+  addExplosion( explosions, target ) {
+    explosions.push({
+      x: target.x + (target.width / 2) - (world.explosionSize / 2) + (Math.random() * 40 - 20),
+      y: target.yx + (target.height / 2) - (world.explosionSize / 2) + (Math.random() * 40 - 20),
+      counter: world.explosionLength,
+    });
+  }
+
+  updateExplosions( explosions ) {
+    explosions.slice().reverse().forEach( (explosion, index) => {
+      explosions.counter -= 1;
+      if( explosions.counter <= 0 ) {
+        explosions.splice( index, 1 );
+      }
+    });
+  }
+
+  mechaAttackTarget( mecha, pirates ) {
+    if( mecha.target !== null ) {
+      if( mecha.distance( pirates[mecha.target] ) < 50 ) {
+        pirates.splcie( mecha.target, 1 );
+        mecha.target = -1;
+      }
+      else {
+        mecha.moveTowardsTarget( pirates[mecha.target] );
+      }
+    }
+  }
+
+  startAttack( attacker, defenders, defenderIndex ) {
+    const defender = defenders[defenderIndex];
+    if( attacker.attackCountdown > 0 ) {
+      attacker.attackCountdown -= 1;
+    }
+    else {
+      this.addExplosion( this.explosions, defender );
+      attacker.attackCountdown = attacker.attackCountdownMax;
+      defender.armor -= attacker.attackPower;
+      if( defender.armor <= 0 ) {
+        defenders.splice( defenderIndex, 1 );
+        if( attacker.type === 'pirate' ) {
+          attacker.target = null;
+        }
+        if( defender.type === 'collector' ) {
+          this.selectedCollector = -1;
+        }
+        this.forceUpdate();
+      }
+    }
+  }
+
+  attack( attacker, defenders, defenderIndex ) {
+    if( defenders.length <= attacker.target ) {
+      attacker.target = null;
+      return;
+    }
+    const defender = defenders[defenderIndex];
+    if( attacker.target !== null ) {
+      if( attacker.distance( defender) <= 50 ) {
+        this.startAttack( attacker, defenders, defenderIndex );
+      }
+      else {
+        attacker.moveTowardsTarget( defender );
+      }
+    }
+  }
+
+  updatePopulation() {
+    const population = this.colonies.reduce( (acc, curr) => {
+      return acc + curr;
+    });
+    this.setState( { population} );
+  }
+
   gameLoop() {
+    this.collectors.forEach( (collector) => {
+      this.collectorMineAluminum( collector );
+      this.collectorMoveTowardsTarget( collector );
+    });
+    const time = parseInt(((new Date()) - this.startTime) / 1000);
+    // Update mecha
+    this.playerMecha.forEach( (mecha) => {
+      //this.mechaAttackTarget( mecha, this.pirates );
+      this.attack( mecha, this.pirates, mecha.target );
+    });
+    // Pirates
+    this.createPirates();
+    this.pirates.forEach( (pirate, index) => {
+      // Find a target
+      pirate.findTarget( this.collectors );
+      if( pirate.leave() ) {
+        this.pirates.splice( index, 1 );
+        this.forceUpdate();
+      }
+      else if( pirate.target !== null ) {
+        pirate.moveTowardsTarget( pirate.target );
+        this.forceUpdate();
+        const result = pirate.attack();
+        if( result !== null ) {
+          this.collectors.forEach( (c,i) => {
+            if( c === result ) {
+              this.collectors.splice( i, 1 );
+              pirate.leaving = true;
+            }
+          })
+        }
+      }
+    });
+    // Fleet
+    this.fleet.spawn( time, this.colonies.length, this.playerMecha );
+    let attackResult = this.fleet.update( this.playerMecha );
+    if( attackResult.length > 0 ) {
+      attackResult.forEach( (attackedMecha) => {
+        this.playerMecha.forEach( (m,i) => {
+          if( m === attackedMecha ) {
+            this.addExplosion( this.explosions, m );
+            if( m.armor <= 0 ) {
+              this.playerMecha.splice( i, 1 );
+            }
+          }
+        });
+      });
+    }
+    // Shuttles and explosions
+    this.createShuttle( time );
+    this.updateShuttles();
+    this.updateExplosions( this.explosions );
     /* this.collectors.forEach( (collector) => {
       // Mine aluminum if on an asteroid
       if( collector.mining >= 0 ) {
@@ -254,63 +501,64 @@ export class World extends Component {
     }) */
   }
 
+  getImagesForObject( objects, name, image, clickEvent ) {
+    return objects.map( (o, index) => {
+      let style = {
+        left: o.x,
+        top: o.y,
+        width: o.width,
+        height: o.height,
+      }
+      let img = image;
+      if( name === "asteroid"  &&  o.hasOwnProperty("aluminum")  &&  o.aluminum <= 0 ) {
+        img = 'images/asteroid-depleted.png';
+      }
+      else if( name === 'shuttle'  &&  o.hasOwnProperty("offloading")  &&  o.offloading ) {
+        style.transform = "rotate(180deg)";
+      }
+      return <img style={style} alt={name + ' ' + index}
+          key={index} className={name}
+          src={img} onClick={clickEvent} />
+    })
+  }
+
+  getExplosionImages( explosions) {
+    return explosions.map( (explosion, index) => {
+      return <Spritesheet image={'/images/explosion.png'} key={index}
+        widthFrame={64} heightFrame={64} steps={16} fps={12}
+        className={'explosion'}
+        style={{left: explosion.x, top: explosion.y, width: world.explosionSize, height: world.explosionSize}} />;
+    });
+  }
+
+  getImagesForRender() {
+    const asteroids = this.getImagesForObject( this.asteroids, "asteroid", "images/asteroid.png", this.asteroidClicked );
+    const colonies = this.getImagesForObject( this.colonies, "colony", "images/colony.png", this.colonyClicked );
+    const collectors = this.getImagesForObject( this.collectors, "collector", "images/ball.png", this.collectorClicked );
+    const mecha = this.getImagesForObject( this.playerMecha, "mecha", "images/player_mecha.png", this.playerMechaClicked );
+    const reticles = this.getImagesForObject( [this.state.reticle], "reticle", "images/reticule.png", null );
+    const pirates = this.getImagesForObject( this.pirates, "pirate", "images/pirate.png", this.pirateClicked );
+    const shuttles = this.getImagesForObject( this.shuttles, "shuttle", "images/transport.png", null );
+    const fleet = this.getImagesForObject( this.fleet, "enemy", "images/enemy_mecha.png", this.enemyMechaClicked );
+    const explosions = this.getExplosionImages( this.explosions );
+    const space = { backgroundImage: "url(" + bgImage + ")" };
+    return { asteroids, colonies, collectors, mecha, reticles, pirates, shuttles, fleet, explosions, space };
+  }
+
   render() {
-    // Set up asteroid images
-    const asteroidObjects = this.asteroids.map( (asteroid, index) => {
-      const asteroidStyle = {
-        left: asteroid.x,
-        top: asteroid.y,
-        height: asteroid.width,
-        width: asteroid.height,
-      }
-      let asteroidImage = 'images/asteroid.png';
-      if( asteroid.aluminum <= 0 ) {
-        asteroidImage = 'images/asteroid-depleted.png';
-      }
-      return <img style={asteroidStyle} alt={'Asteroid ' + index}
-          key={'asteroid' + index} className='asteroid'
-          src={asteroidImage} onClick={this.asteroidClicked} />
-    });
-    // Set up colony images
-    const colonyObjects = this.colonies.map( (colony, index) => {
-      const colonyStyle = {
-        left: colony.x,
-        top: colony.y,
-        width: world.colonyImageSize,
-        height: world.colonyImageSize
-      }
-      return <img style={colonyStyle} alt={'Colony ' + index}
-          key={'colony' + index} className='colony'
-          src='images/Colony.png' />
-    });
-    // Set up collector images
-    const collectorObjects = this.collectors.map( (collector, index) => {
-      const collectorStyle = {
-        left: collector.x,
-        top: collector.y
-      }
-      return <img style={collectorStyle} alt={'Collector ' + index}
-          key={'collector' + index} className='collector'
-          src='images/collector.png' onClick={this.collectorClicked} />
-    });
-    // Set up reticule image
-    const reticuleStle = {
-      left: this.state.reticuleX,
-      top: this.state.reticuleY
-    }
-    const reticuleObject = <img style={reticuleStle} alt='Selector reticule'
-        key='Selector reticule' className='reticule'
-        src='images/reticule.png' />
-    const spaceStyle = {
-      backgroundImage: 'url(' + bgImage + ')'
-    }
+    const images = this.getImagesForRender();
     return (
-      <div className="Space" style={spaceStyle}
+      <div className="Space" style={images.space}
           onClick={(e) => this.spaceClicked(e)}>
-        {asteroidObjects}
-        {colonyObjects}
-        {collectorObjects}
-        {reticuleObject}
+        {images.asteroids}
+        {images.colonies}
+        {images.collectors}
+        {images.mecha}
+        {images.reticles}
+        {images.pirates}
+        {images.shuttles}
+        {images.fleet}
+        {images.explosions}
         <StatusBarStateful />
       </div>
     );
@@ -330,7 +578,9 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
   actionMined: amount => dispatch( actionMined( { amount: amount } ) ),
+  actionAddPopulation: amount => dispatch( actionAddPopulation( { amount: amount } ) ),
   actionPlacingCollector: value => dispatch( actionPlacingCollector( value ) ),
+  actionPlacingMecha: value => dispatch( actionPlacingMecha( value ) ),
   actionPlacingColony: value => dispatch( actionPlacingColony( value ) )
 });
 const WorldStateful = connect(mapStateToProps, mapDispatchToProps)(World);
