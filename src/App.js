@@ -100,6 +100,17 @@ export class World extends Component {
     if( this.selectedMecha !== -1 ) {
       let target = parseInt( e.currentTarget.alt.substring( 6 ) );
       this.playerMecha[this.selectedMecha].setTarget( this.fleet.getShip( target ) );
+      this.selectedMecha = -1;
+      this.clearReticle();
+    }
+  }
+
+  pirateClicked(e) {
+    if( this.selectedMecha !== -1 ) {
+      const selectedPirate = parseInt( e.currentTarget.alt.substring( 7 ) );
+      this.playerMecha[this.selectedMecha].target = selectedPirate;
+      this.selectedMecha = -1;
+      this.clearReticle();
     }
   }
 
@@ -114,7 +125,10 @@ export class World extends Component {
   }
 
   spaceClicked(e) {
-    // Place collector
+    this.placeCollectorWhenClicked( e );
+    this.placeMechaWhenClicked( e );
+    this.placeColonyWhenClicked( e );
+    /* // Place collector
     if( this.props.placingCollector ) {
       this.collectors.push({
         x: e.pageX - (world.collectorImageSize / 2),
@@ -136,7 +150,24 @@ export class World extends Component {
       this.props.actionMined( 0 - world.aluminumForColony );
       this.props.actionPlacingColony( false );
       this.forceUpdate();
-    }
+    } */
+  }
+
+  setReticle( ship ) {
+    this.setState( {
+      reticle: {
+        x: ship.x,
+        y: ship.y,
+        width: ship.width,
+        height: ship.height,
+      }
+    });
+  }
+
+  clearReticle() {
+    this.setState( {
+      reticle: { x: -30, y: -30, world: world.reticleSize, height: world.reticleSize }
+    });
   }
 
   gameLoop() {
