@@ -71,7 +71,7 @@ export class World extends Component {
     this.asteroidClicked = this.asteroidClicked.bind(this);
     this.spaceClicked = this.spaceClicked.bind(this);
     //this.shipAtTarget = this.shipAtTarget.bind(this);
-    //this.clearReticle = this.clearReticle.bind(this);
+    this.clearReticle = this.clearReticle.bind(this);
     //this.pirateAttackTarget = this.pirateAttackTarget.bind(this);
     this.gameLoop = this.gameLoop.bind(this);
   }
@@ -151,6 +151,44 @@ export class World extends Component {
       this.props.actionPlacingColony( false );
       this.forceUpdate();
     } */
+  }
+
+  placeCollectorWhenClicked( e ) {
+    if( this.props.placingCollector ) {
+      this.createCollector( e.pageX - (world.collectorImageSize / 2),
+                            e.pageY - (world.collectorImageSize / 2) );
+      this.props.actionMined( 0 - world.aluminumForCollector );
+      this.props.actionPlacingCollector( false );
+      this.forceUpdate();
+    }
+  }
+
+  placeMechaWhenClicked( e ) {
+    if( this.props.placingMecha ) {
+      let newMecha = new Mecha(
+        e.pageX - (world.mechaImageSize / 2),
+        e.pageY - (world.mechaImageSize / 2),
+      );
+      this.playerMecha.push( newMecha );
+      this.props.actionMined( 0 - world.aluminumForMecha );
+      this.props.actionPlacingMecha( false );
+      this.forceUpdate();
+    }
+  }
+
+  placeColonyWhenClicked( e ) {
+    if( this.props.placingColony ) {
+      this.colonies.push( {
+        x: e.pageX - (world.colonyImageWidth / 2),
+        y: e.pageY - (world.colonyImageHeight / 2),
+        width: world.colonyImageWidth,
+        height: world.colonyImageHeight,
+        population: 0,
+      } );
+      this.props.actionMined( 0 - world.aluminumForColony );
+      this.props.actionPlacingColony( false );
+      this.forceUpdate();
+    }
   }
 
   setReticle( ship ) {
