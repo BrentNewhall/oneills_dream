@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Spritesheet from 'react-responsive-spritesheet';
 import './App.css';
 
-import bgImage from './space_bg.jpg'
+import bgImage from './earth_edge.jpg'
 import StatusBarStateful from './StatusBar'
 import world from './global';
 import {
@@ -121,7 +121,7 @@ export class World extends Component {
         this.selectedCollector < this.collectors.length ) {
       const index = parseInt( e.currentTarget.alt.substring( 9 ) );
       this.collectors[this.selectedCollector].setTarget( this.asteroids[index] );
-      this.collectors[this.selectedCollector].mining = -1; // No longer mining
+      this.collectors[this.selectedCollector].mining = null; // No longer mining
       this.clearReticle();
     }
   }

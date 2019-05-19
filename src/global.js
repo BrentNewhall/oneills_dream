@@ -1,7 +1,7 @@
 const world = {
     height: 2400,
     width: 1000,
-    miningCountdown: 250,
+    miningCountdown: 50,
     aluminumForCollector: 20,
     aluminumForMecha: 5, //25
     aluminumForColony: 1, //100
