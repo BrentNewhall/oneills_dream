@@ -551,11 +551,16 @@ export class World extends Component {
     })
   }
 
-  getExplosionImages( explosions) {
+  deleteCompleteExplosion( targetIndex ) {
+    this.explosions.splice( targetIndex, 1 );
+  }
+
+  getExplosionImages( explosions ) {
     return explosions.map( (explosion, index) => {
       return <Spritesheet image={'images/explosion.png'} key={index}
         widthFrame={64} heightFrame={64} steps={16} fps={12}
-        className={'explosion'}
+        className={'explosion'} loop={true}
+        onLoopComplete={spritesheet => {this.deleteCompleteExplosion(index)}}
         style={{left: explosion.x, top: explosion.y, width: world.explosionSize, height: world.explosionSize}} />;
     });
   }
