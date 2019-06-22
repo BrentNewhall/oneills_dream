@@ -104,6 +104,8 @@ export class World extends Component {
     this.colonies = [];
     // Explosions
     this.explosions = [];
+    this.props.actionMined( 0 - this.props.aluminum );
+    
   }
 
   startGame() {
