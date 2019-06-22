@@ -32,7 +32,7 @@ const world = {
         speed: 1,
     },
     newFleetEveryThisSeconds: 15,
-    endGameAfterThisSeconds: 30,
+    endGameAfterThisSeconds: 60,
 }
 
 export const ACTION_ADD_ALUMINUM = 'ADD_ALUMINUM';

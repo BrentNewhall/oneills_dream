@@ -113,6 +113,14 @@ export class World extends Component {
     this.forceUpdate();
   }
 
+  checkForGameOver( time ) {
+    if( time >= world.endGameAfterThisSeconds ||
+        ( this.collectors.length === 0  &&  this.playerMecha.length === 0  &&  this.colonies.length === 0 ) ) {
+      this.showTitleScreen = true;
+      document.getElementById("audio-player").pause();
+    }
+  }
+
   // ********** Click events
 
   collectorClicked(e) {
@@ -300,7 +308,7 @@ export class World extends Component {
   createPirates( time ) {
     if( time !== 0  &&  time % world.newPirateEveryThisSeconds === 0 ) {
       if( this.pirates.length === 0 ) {
-        const y = parseInt(Math.random() * world.height);
+        const y = parseInt(Math.random() * world.height / 10);
         const pirate = new Pirate();
         pirate.setDimensions( -50, y, world.pirate.imageSize, world.pirate.imageSize );
         pirate.attackCountdownMax = world.pirate.attackCountdown;
@@ -452,13 +460,6 @@ export class World extends Component {
       return acc + curr;
     });
     this.setState( { population} );
-  }
-
-  checkForGameOver( time ) {
-    if( time >= world.endGameAfterThisSeconds ) {
-      this.showTitleScreen = true;
-      document.getElementById("audio-player").pause();
-    }
   }
 
   gameLoop() {
