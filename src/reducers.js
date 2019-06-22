@@ -4,6 +4,7 @@ import {
     ACTION_PLACING_COLLECTOR,
     ACTION_PLACING_MECHA,
     ACTION_PLACING_COLONY,
+    ACTION_ADD_POINTS,
   } from './global';
   
 function reducers( state, action ) {
@@ -32,6 +33,12 @@ function reducers( state, action ) {
             return {
                 ...state,
                 placingColony: action.placement
+            }
+        case ACTION_ADD_POINTS:
+            console.log( action );
+            return {
+                ...state,
+                points: action.points.points + state.points
             }
         default:
             return state;

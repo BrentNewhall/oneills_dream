@@ -12,6 +12,7 @@ import {
   actionPlacingCollector,
   actionPlacingMecha,
   actionPlacingColony,
+  actionAddPoints,
 } from './actions';
 import Ship from './Ship';
 import Shuttle from './Shuttle';
@@ -24,6 +25,9 @@ function TitleScreen(props) {
   return <div id="title-screen">
     <h1>O'Neill's Dream</h1>
     <button onClick={() => { props.startGame(); }}>Start Game</button>
+    <h2>Credits</h2>
+    <p>Game written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
+    <p>Music from <a href="https://filmmusic.io">Filmmusic.io</a>: "Oppressive Gloom" by <a href="https://incompetech.com">Kevin MacLeod</a>, licensed <a href="http://creativecommons.org/licenses/by/4.0/">CC BY</a></p>
   </div>
 }
 
@@ -66,6 +70,8 @@ export class World extends Component {
     this.fleet = new Fleet();
     // Explosions
     this.explosions = [];
+    // Miscellaneous
+    this.points = 0;
     this.screenMode = 1;
     // Define functions
     this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
@@ -92,6 +98,7 @@ export class World extends Component {
 
   startGame() {
     this.screenMode = 0;
+    this.points = 0;
     this.startTime = new Date();
     this.forceUpdate();
   }
@@ -171,6 +178,7 @@ export class World extends Component {
                             e.pageY - (world.collectorImageSize / 2) );
       this.props.actionMined( 0 - world.aluminumForCollector );
       this.props.actionPlacingCollector( false );
+      this.props.actionAddPoints( world.aluminumForCollector * 2 );
       this.forceUpdate();
     }
   }
@@ -184,6 +192,7 @@ export class World extends Component {
       this.playerMecha.push( newMecha );
       this.props.actionMined( 0 - world.aluminumForMecha );
       this.props.actionPlacingMecha( false );
+      this.props.actionAddPoints( world.aluminumForMecha * 2 );
       this.forceUpdate();
     }
   }
@@ -199,6 +208,7 @@ export class World extends Component {
       } );
       this.props.actionMined( 0 - world.aluminumForColony );
       this.props.actionPlacingColony( false );
+      this.props.actionAddPoints( world.aluminumForColony * 5 );
       this.forceUpdate();
     }
   }
@@ -237,6 +247,7 @@ export class World extends Component {
     if( shuttle.colonyLoading <= 0 ) {
       this.colonies[shuttle.targetColony].population += 100;
       this.props.actionAddPopulation( 100 );
+      this.props.actionAddPoints( 100 );
     }
   }
 
@@ -610,12 +621,14 @@ class App extends Component {
 const mapStateToProps = state => ({
   aluminum: state.aluminum,
   population: state.population,
+  points: state.points,
   placingCollector: state.placingCollector,
   placingMecha: state.placingMecha,
   placingColony: state.placingColony
 });
 const mapDispatchToProps = dispatch => ({
   actionMined: amount => dispatch( actionMined( { amount: amount } ) ),
+  actionAddPoints: points => dispatch( actionAddPoints( { points } ) ),
   actionAddPopulation: amount => dispatch( actionAddPopulation( { amount: amount } ) ),
   actionPlacingCollector: value => dispatch( actionPlacingCollector( value ) ),
   actionPlacingMecha: value => dispatch( actionPlacingMecha( value ) ),

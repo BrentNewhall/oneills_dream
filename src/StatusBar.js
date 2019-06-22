@@ -79,7 +79,8 @@ class StatusBar extends Component {
         </span>
         <span className='stats'>
           Aluminum: {this.props.aluminum} &nbsp;
-          Population: {this.props.population}
+          Population: {this.props.population} &nbsp;
+          Points: {this.props.points}
         </span>
       </div>;
     }
@@ -88,6 +89,7 @@ class StatusBar extends Component {
   const mapStateToProps = state => ({
     aluminum: state.aluminum,
     population: state.population,
+    points: state.points,
     placingCollector: state.placingCollector,
     placingMecha: state.placingMecha,
     placingColony: state.placingColony

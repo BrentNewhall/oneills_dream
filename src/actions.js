@@ -4,6 +4,7 @@ import {
   ACTION_PLACING_COLLECTOR,
   ACTION_PLACING_MECHA,
   ACTION_PLACING_COLONY,
+  ACTION_ADD_POINTS,
 } from './global';
 
 export function actionMined( data ) {
@@ -24,4 +25,8 @@ export function actionPlacingMecha( placement ) {
 
 export function actionPlacingColony( placement ) {
   return { type: ACTION_PLACING_COLONY, placement };
+}
+
+export function actionAddPoints( points ) {
+  return { type: ACTION_ADD_POINTS, points };
 }
