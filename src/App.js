@@ -6,7 +6,7 @@ import './App.css';
 
 import bgImage from './earth_edge.jpg'
 import StatusBarStateful from './StatusBar'
-import world from './global';
+import world, { options } from './global';
 import {
   actionMined,
   actionAddPopulation,
@@ -22,12 +22,22 @@ import Mecha from './Mecha';
 import Fleet from './Fleet';
 
 
+function OptionsComponent( props ) {
+  return <div id="options">
+    <h2>Options</h2>
+    <div className="options-box">
+      <label><input type="checkbox" onChange={(e) => props.clickedOptionBGMusic(e)} defaultChecked={props.options.playBGmusic} /> Play music</label><br />
+      <label><input type="checkbox" onChange={(e) => props.clickedOptionSoundFX(e)} defaultChecked={props.options.playSoundFX} /> Play sound effects</label>
+    </div>
+  </div>
+}
 function TitleScreen(props) {
   const gameOver = props.points > 0 ? <div><h2>Game Over</h2><p>You ended the game with <span className="game-over-points">{props.points}</span> points.</p></div> : [];
   return <div id="title-screen">
     <h1>O'Neill's Dream</h1>
     {gameOver}
     <button onClick={() => { props.startGame(); }}>Start Game</button>
+    <OptionsComponent clickedOptionBGMusic={props.clickedOptionBGMusic} clickedOptionSoundFX={props.clickedOptionSoundFX} options={props.options} />
     <h2>Credits</h2>
     <p>Game written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
     <p>Music from <a href="https://filmmusic.io">Filmmusic.io</a>: "The Complex" by <a href="https://incompetech.com">Kevin MacLeod</a>, licensed <a href="http://creativecommons.org/licenses/by/4.0/">CC BY</a></p>
@@ -69,6 +79,8 @@ export class World extends Component {
   bindMethodsToThis() {
     this.startGame = this.startGame.bind(this);
     this.resetGame = this.resetGame.bind(this);
+    this.clickedOptionBGMusic = this.clickedOptionBGMusic.bind(this);
+    this.clickedOptionSoundFX = this.clickedOptionSoundFX.bind(this);
     this.collectorClicked = this.collectorClicked.bind(this);
     this.playerMechaClicked = this.playerMechaClicked.bind(this);
     this.enemyMechaClicked = this.enemyMechaClicked.bind(this);
@@ -111,7 +123,9 @@ export class World extends Component {
   startGame() {
     this.showTitleScreen = false;
     this.resetGame();
-    document.getElementById("audio-player").play();
+    if( options.playBGmusic ) {
+      document.getElementById("audio-player").play();
+    }
     this.forceUpdate();
   }
 
@@ -121,6 +135,17 @@ export class World extends Component {
       this.showTitleScreen = true;
       document.getElementById("audio-player").pause();
     }
+  }
+
+  // ********** Options
+
+  clickedOptionBGMusic( event ) {
+    options.playBGmusic = event.target.checked;
+    console.log( options.playBGmusic );
+  }
+
+  clickedOptionSoundFX( event ) {
+    options.playSoundFX = event.target.checked;
   }
 
   // ********** Click events
@@ -613,7 +638,7 @@ export class World extends Component {
 
   render() {
     const images = this.getImagesForRender();
-    const titleScreen = this.showTitleScreen ? <TitleScreen startGame={this.startGame} points={this.props.points} /> : [];
+    const titleScreen = this.showTitleScreen ? <TitleScreen startGame={this.startGame} points={this.props.points} clickedOptionBGMusic={this.clickedOptionBGMusic} clickedOptionSoundFX={this.clickedOptionSoundFX} options={options} /> : [];
     return (
       <div className="Space" style={images.space}
           onClick={(e) => this.spaceClicked(e)}>

@@ -35,6 +35,11 @@ const world = {
     endGameAfterThisSeconds: 60,
 }
 
+export let options = {
+    playBGmusic: true,
+    playSoundFX: true,
+}
+
 export const ACTION_ADD_ALUMINUM = 'ADD_ALUMINUM';
 export const ACTION_ADD_POPULATION = 'ADD_POPULATION';
 export const ACTION_PLACING_COLLECTOR = 'PLACING_COLLECTOR';

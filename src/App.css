@@ -108,3 +108,10 @@
 .game-over-points {
   font-weight: bold;
 }
+
+.options-box {
+  width: 20vw;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
