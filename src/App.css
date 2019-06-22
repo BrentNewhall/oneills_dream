@@ -104,3 +104,7 @@
   height: 30px;
   z-index: 101;
 }
+
+.game-over-points {
+  font-weight: bold;
+}

@@ -23,7 +23,7 @@ import Fleet from './Fleet';
 
 
 function TitleScreen(props) {
-  const gameOver = props.points > 0 ? <div><h2>Game Over</h2><p>You ended the game with <span className="points">{props.points}</span> points.</p></div> : [];
+  const gameOver = props.points > 0 ? <div><h2>Game Over</h2><p>You ended the game with <span className="game-over-points">{props.points}</span> points.</p></div> : [];
   return <div id="title-screen">
     <h1>O'Neill's Dream</h1>
     {gameOver}
