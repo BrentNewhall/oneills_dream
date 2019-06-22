@@ -572,7 +572,7 @@ export class World extends Component {
 
   getExplosionImages( explosions) {
     return explosions.map( (explosion, index) => {
-      return <Spritesheet image={'/images/explosion.png'} key={index}
+      return <Spritesheet image={'images/explosion.png'} key={index}
         widthFrame={64} heightFrame={64} steps={16} fps={12}
         className={'explosion'}
         style={{left: explosion.x, top: explosion.y, width: world.explosionSize, height: world.explosionSize}} />;

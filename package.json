@@ -19,7 +19,8 @@
     "eject": "react-scripts eject",
     "deploy": "./deploy.sh"
   },
-  "homepage": "https://s3.amazonaws.com/oneills-dream/",
+  "homepage-s3": "https://s3.amazonaws.com/oneills-dream/",
+  "homepage": "https://software.brentnewhall.com/games/oneills-dream/",
   "eslintConfig": {
     "extends": "react-app"
   },
