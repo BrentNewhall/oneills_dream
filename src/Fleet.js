@@ -35,7 +35,9 @@ class Fleet {
                 this.mechaList.push( newMecha );
             }
             this.findTargets( enemies );
+            return true;
         }
+        return false;
     }
 
     findTargets( enemies ) {

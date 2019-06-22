@@ -69,7 +69,6 @@ export class World extends Component {
     this.resetGame();
     // Miscellaneous
     this.showTitleScreen = true;
-    this.bgMusic = [];
     // Define functions
     this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
     this.bindMethodsToThis();
@@ -511,13 +510,20 @@ export class World extends Component {
       }
     });
     // Fleet
-    this.fleet.spawn( this.time, this.colonies.length, this.playerMecha );
+    if( this.fleet.spawn( this.time, this.colonies.length, this.playerMecha ) ) {
+      if( options.playSoundFX ) {
+        document.getElementById("audio-warning").play();
+      }
+    }
     let attackResult = this.fleet.update( this.playerMecha );
     if( attackResult.length > 0 ) {
       attackResult.forEach( (attackedMecha) => {
         this.playerMecha.forEach( (m,i) => {
           if( m === attackedMecha ) {
             this.addExplosion( this.explosions, m );
+            if( options.playSoundFX ) {
+              document.getElementById("audio-explosion").play();
+            }
             if( m.armor <= 0 ) {
               this.playerMecha.splice( i, 1 );
             }
@@ -598,6 +604,8 @@ export class World extends Component {
         {images.explosions}
         <StatusBarStateful time={this.time} />
         <ReactAudioPlayer src="audio/the-complex-by-kevin-macleod.mp3" id="audio-player" loop={true} volume={0.3} controls />
+        <ReactAudioPlayer src="audio/explosion+6.mp3" id="audio-explosion" volume={0.2} />
+        <ReactAudioPlayer src="audio/warning-beep.mp4" id="audio-warning" volume={0.3} />
       </div>
     );
   }
