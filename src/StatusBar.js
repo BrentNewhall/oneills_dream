@@ -20,6 +20,7 @@ class StatusBar extends Component {
       this.buildCollector = this.buildCollector.bind(this);
       this.buildMecha = this.buildMecha.bind(this);
       this.buildColony = this.buildColony.bind(this);
+      this.getTime = this.getTime.bind(this);
     }
   
     buildCollector() {
@@ -32,6 +33,13 @@ class StatusBar extends Component {
   
     buildColony() {
       this.props.actionPlacingColony( true );
+    }
+
+    getTime() {
+      let myTime = world.endGameAfterThisSeconds - this.props.time;
+      const minutes = Math.floor(myTime / 60);
+      const seconds = Math.floor(myTime % 60);
+      return minutes + ":" + seconds.toString().padStart(2,'0');
     }
   
     render() {
@@ -81,7 +89,7 @@ class StatusBar extends Component {
           Aluminum: {this.props.aluminum} &nbsp;
           Population: {this.props.population} &nbsp;
           Points: {this.props.points} &nbsp;
-          Time: {world.endGameAfterThisSeconds - this.props.time}
+          Time: {this.getTime()}
         </span>
       </div>;
     }

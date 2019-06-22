@@ -18,7 +18,7 @@ const world = {
         imageSize: 61,
         armor: 50,
     },
-    newPirateEveryThisSeconds: 10, //60
+    newPirateEveryThisSeconds: 60, //60
     mechaAttackCountdown: 50,
     mechaAttackPower: 10,
     mechaImageSize: 101,
@@ -32,7 +32,7 @@ const world = {
         speed: 1,
     },
     newFleetEveryThisSeconds: 15,
-    endGameAfterThisSeconds: 60,
+    endGameAfterThisSeconds: 600,
 }
 
 export let options = {
