@@ -73,7 +73,7 @@ export class World extends Component {
     this.explosions = [];
     // Miscellaneous
     this.points = 0;
-    this.screenMode = 1;
+    this.showTitleScreen = true;
     this.bgMusic = [];
     // Define functions
     this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
@@ -99,7 +99,7 @@ export class World extends Component {
   // ********** Start game
 
   startGame() {
-    this.screenMode = 0;
+    this.showTitleScreen = false;
     this.points = 0;
     this.startTime = new Date();
     document.getElementById("audio-player").play();
@@ -448,7 +448,7 @@ export class World extends Component {
   }
 
   gameLoop() {
-    if( this.screenMode !== 0 ) {
+    if( this.showTitleScreen ) {
       // If title/game over screens are displayed, suspend game loop
       return;
     }
@@ -595,7 +595,7 @@ export class World extends Component {
 
   render() {
     const images = this.getImagesForRender();
-    const titleScreen = this.screenMode === 0 ? [] : <TitleScreen startGame={this.startGame} />;
+    const titleScreen = this.showTitleScreen ? <TitleScreen startGame={this.startGame} /> : [];
     return (
       <div className="Space" style={images.space}
           onClick={(e) => this.spaceClicked(e)}>
