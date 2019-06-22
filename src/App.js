@@ -28,7 +28,7 @@ function TitleScreen(props) {
     <button onClick={() => { props.startGame(); }}>Start Game</button>
     <h2>Credits</h2>
     <p>Game written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
-    <p>Music from <a href="https://filmmusic.io">Filmmusic.io</a>: "Oppressive Gloom" by <a href="https://incompetech.com">Kevin MacLeod</a>, licensed <a href="http://creativecommons.org/licenses/by/4.0/">CC BY</a></p>
+    <p>Music from <a href="https://filmmusic.io">Filmmusic.io</a>: "The Complex" by <a href="https://incompetech.com">Kevin MacLeod</a>, licensed <a href="http://creativecommons.org/licenses/by/4.0/">CC BY</a></p>
   </div>
 }
 
@@ -610,7 +610,7 @@ export class World extends Component {
         {images.fleet}
         {images.explosions}
         <StatusBarStateful />
-        <ReactAudioPlayer src="audio/oppressive-gloom-by-kevin-macleod.mp3" id="audio-player" loop={true} volume={0.3} controls />
+        <ReactAudioPlayer src="audio/the-complex-by-kevin-macleod.mp3" id="audio-player" loop={true} volume={0.3} controls />
       </div>
     );
   }
