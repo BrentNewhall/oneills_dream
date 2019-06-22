@@ -80,7 +80,8 @@ class StatusBar extends Component {
         <span className='stats'>
           Aluminum: {this.props.aluminum} &nbsp;
           Population: {this.props.population} &nbsp;
-          Points: {this.props.points}
+          Points: {this.props.points} &nbsp;
+          Time: {world.endGameAfterThisSeconds - this.props.time}
         </span>
       </div>;
     }

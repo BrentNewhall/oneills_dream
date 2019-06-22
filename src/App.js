@@ -23,8 +23,10 @@ import Fleet from './Fleet';
 
 
 function TitleScreen(props) {
+  const gameOver = props.points > 0 ? <div><h2>Game Over</h2><p>You ended the game with <span className="points">{props.points}</span> points.</p></div> : [];
   return <div id="title-screen">
     <h1>O'Neill's Dream</h1>
+    {gameOver}
     <button onClick={() => { props.startGame(); }}>Start Game</button>
     <h2>Credits</h2>
     <p>Game written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
@@ -40,7 +42,6 @@ export class World extends Component {
     this.state = {
       reticle: { x: -30, y: -30, width: world.reticleSize, height: world.reticleSize }
     }
-    this.startTime = new Date();
     // Create asteroids
     this.asteroids = [];
     for( let i = 0; i < 60; i++ ) {
@@ -54,25 +55,8 @@ export class World extends Component {
       }
       this.asteroids.push( asteroid );
     }
-    // Create colonies
-    this.colonies = [];
-    // Create collectors
-    this.collectors = [];
-    this.selectedCollector = -1;
-    this.createCollector( 250, 250 );
-    // Mecha
-    this.playerMecha = [];
-    this.selectedMecha = -1;
-    // Pirates
-    this.pirates = [];
-    // Shuttles
-    this.shuttles = [];
-    // Fleet
-    this.fleet = new Fleet();
-    // Explosions
-    this.explosions = [];
+    this.resetGame();
     // Miscellaneous
-    this.points = 0;
     this.showTitleScreen = true;
     this.bgMusic = [];
     // Define functions
@@ -84,6 +68,7 @@ export class World extends Component {
 
   bindMethodsToThis() {
     this.startGame = this.startGame.bind(this);
+    this.resetGame = this.resetGame.bind(this);
     this.collectorClicked = this.collectorClicked.bind(this);
     this.playerMechaClicked = this.playerMechaClicked.bind(this);
     this.enemyMechaClicked = this.enemyMechaClicked.bind(this);
@@ -98,10 +83,32 @@ export class World extends Component {
 
   // ********** Start game
 
+  resetGame() {
+    this.startTime = new Date();
+    this.time = 0;
+    this.points = 0;
+    // Create collectors
+    this.collectors = [];
+    this.selectedCollector = -1;
+    this.createCollector( 250, 250 );
+    // Mecha
+    this.playerMecha = [];
+    this.selectedMecha = -1;
+    // Pirates
+    this.pirates = [];
+    // Shuttles
+    this.shuttles = [];
+    // Fleet
+    this.fleet = new Fleet();
+    // Create colonies
+    this.colonies = [];
+    // Explosions
+    this.explosions = [];
+  }
+
   startGame() {
     this.showTitleScreen = false;
-    this.points = 0;
-    this.startTime = new Date();
+    this.resetGame();
     document.getElementById("audio-player").play();
     this.forceUpdate();
   }
@@ -447,6 +454,13 @@ export class World extends Component {
     this.setState( { population} );
   }
 
+  checkForGameOver( time ) {
+    if( time >= world.endGameAfterThisSeconds ) {
+      this.showTitleScreen = true;
+      document.getElementById("audio-player").pause();
+    }
+  }
+
   gameLoop() {
     if( this.showTitleScreen ) {
       // If title/game over screens are displayed, suspend game loop
@@ -456,14 +470,15 @@ export class World extends Component {
       this.collectorMineAluminum( collector );
       this.collectorMoveTowardsTarget( collector );
     });
-    const time = parseInt(((new Date()) - this.startTime) / 1000);
+    this.time = parseInt(((new Date()) - this.startTime) / 1000);
+    this.checkForGameOver( this.time );
     // Update mecha
     this.playerMecha.forEach( (mecha) => {
       //this.mechaAttackTarget( mecha, this.pirates );
       this.attack( mecha, this.pirates, mecha.target );
     });
     // Pirates
-    this.createPirates( time );
+    this.createPirates( this.time );
     this.pirates.forEach( (pirate, index) => {
       // Find a target
       pirate.findTarget( this.collectors );
@@ -486,7 +501,7 @@ export class World extends Component {
       }
     });
     // Fleet
-    this.fleet.spawn( time, this.colonies.length, this.playerMecha );
+    this.fleet.spawn( this.time, this.colonies.length, this.playerMecha );
     let attackResult = this.fleet.update( this.playerMecha );
     if( attackResult.length > 0 ) {
       attackResult.forEach( (attackedMecha) => {
@@ -501,7 +516,7 @@ export class World extends Component {
       });
     }
     // Shuttles and explosions
-    this.createShuttle( time );
+    this.createShuttle( this.time );
     this.updateShuttles();
     this.updateExplosions( this.explosions );
     /* this.collectors.forEach( (collector) => {
@@ -595,7 +610,7 @@ export class World extends Component {
 
   render() {
     const images = this.getImagesForRender();
-    const titleScreen = this.showTitleScreen ? <TitleScreen startGame={this.startGame} /> : [];
+    const titleScreen = this.showTitleScreen ? <TitleScreen startGame={this.startGame} points={this.props.points} /> : [];
     return (
       <div className="Space" style={images.space}
           onClick={(e) => this.spaceClicked(e)}>
@@ -609,7 +624,7 @@ export class World extends Component {
         {images.shuttles}
         {images.fleet}
         {images.explosions}
-        <StatusBarStateful />
+        <StatusBarStateful time={this.time} />
         <ReactAudioPlayer src="audio/the-complex-by-kevin-macleod.mp3" id="audio-player" loop={true} volume={0.3} controls />
       </div>
     );
