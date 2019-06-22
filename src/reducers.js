@@ -35,7 +35,6 @@ function reducers( state, action ) {
                 placingColony: action.placement
             }
         case ACTION_ADD_POINTS:
-            console.log( action );
             return {
                 ...state,
                 points: action.points.points + state.points

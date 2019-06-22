@@ -95,3 +95,11 @@
   padding-top: 20vh;
   text-align: center;
 }
+
+#audio-player {
+  position: fixed;
+  bottom: 2px;
+  right: 2px;
+  height: 30px;
+  z-index: 101;
+}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Spritesheet from 'react-responsive-spritesheet';
+import ReactAudioPlayer from 'react-audio-player';
 import './App.css';
 
 import bgImage from './earth_edge.jpg'
@@ -73,6 +74,7 @@ export class World extends Component {
     // Miscellaneous
     this.points = 0;
     this.screenMode = 1;
+    this.bgMusic = [];
     // Define functions
     this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
     this.bindMethodsToThis();
@@ -100,6 +102,7 @@ export class World extends Component {
     this.screenMode = 0;
     this.points = 0;
     this.startTime = new Date();
+    document.getElementById("audio-player").play();
     this.forceUpdate();
   }
 
@@ -607,6 +610,7 @@ export class World extends Component {
         {images.fleet}
         {images.explosions}
         <StatusBarStateful />
+        <ReactAudioPlayer src="audio/oppressive-gloom-by-kevin-macleod.mp3" id="audio-player" loop={true} volume={0.3} controls />
       </div>
     );
   }
