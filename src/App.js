@@ -20,6 +20,13 @@ import Mecha from './Mecha';
 import Fleet from './Fleet';
 
 
+function TitleScreen(props) {
+  return <div id="title-screen">
+    <h1>O'Neill's Dream</h1>
+    <button onClick={() => { props.startGame(); }}>Start Game</button>
+  </div>
+}
+
 /* Main game world */
 
 export class World extends Component {
@@ -28,6 +35,7 @@ export class World extends Component {
     this.state = {
       reticle: { x: -30, y: -30, width: world.reticleSize, height: world.reticleSize }
     }
+    this.startTime = new Date();
     // Create asteroids
     this.asteroids = [];
     for( let i = 0; i < 60; i++ ) {
@@ -58,6 +66,7 @@ export class World extends Component {
     this.fleet = new Fleet();
     // Explosions
     this.explosions = [];
+    this.screenMode = 1;
     // Define functions
     this.bindMethodsToThis = this.bindMethodsToThis.bind( this );
     this.bindMethodsToThis();
@@ -66,27 +75,28 @@ export class World extends Component {
   }
 
   bindMethodsToThis() {
+    this.startGame = this.startGame.bind(this);
     this.collectorClicked = this.collectorClicked.bind(this);
     this.playerMechaClicked = this.playerMechaClicked.bind(this);
     this.enemyMechaClicked = this.enemyMechaClicked.bind(this);
-    //this.pirateClicked = this.pirateClicked.bind(this);
+    this.pirateClicked = this.pirateClicked.bind(this);
     this.asteroidClicked = this.asteroidClicked.bind(this);
     this.spaceClicked = this.spaceClicked.bind(this);
-    //this.shipAtTarget = this.shipAtTarget.bind(this);
     this.clearReticle = this.clearReticle.bind(this);
-    //this.pirateAttackTarget = this.pirateAttackTarget.bind(this);
+    this.createPirates = this.createPirates.bind(this);
+    this.pirateAttackTarget = this.pirateAttackTarget.bind(this);
     this.gameLoop = this.gameLoop.bind(this);
   }
 
-  createCollector( x, y ) {
-    let ship = new Ship();
-    ship.setDimensions( x, y, world.collectorImageSize, world.collectorImageSize );
-    ship.mining = null;
-    ship.miningCountdown = 0;
-    ship.armor = world.collectorArmor;
-    ship.speed = world.collectorSpeed;
-    this.collectors.push( ship );
+  // ********** Start game
+
+  startGame() {
+    this.screenMode = 0;
+    this.startTime = new Date();
+    this.forceUpdate();
   }
+
+  // ********** Click events
 
   collectorClicked(e) {
     this.selectedCollector = parseInt( e.currentTarget.alt.substring( 10 ) );
@@ -193,6 +203,8 @@ export class World extends Component {
     }
   }
 
+  // ********** Reticle
+
   setReticle( ship ) {
     this.setState( {
       reticle: {
@@ -209,6 +221,8 @@ export class World extends Component {
       reticle: { x: -30, y: -30, world: world.reticleSize, height: world.reticleSize }
     });
   }
+
+  // ********** Shuttles
 
   createShuttle( seconds ) {
     if( this.colonies.length > 0  &&  seconds % 10 === 0  &&  this.shuttles.length === 0 ) {
@@ -260,10 +274,12 @@ export class World extends Component {
     });
   }
 
+  // ********** Pirates
+
   createPirates( time ) {
     if( time !== 0  &&  time % world.newPirateEveryThisSeconds === 0 ) {
-      const y = parseInt(Math.random() * world.height);
       if( this.pirates.length === 0 ) {
+        const y = parseInt(Math.random() * world.height);
         const pirate = new Pirate();
         pirate.setDimensions( -50, y, world.pirate.imageSize, world.pirate.imageSize );
         pirate.attackCountdownMax = world.pirate.attackCountdown;
@@ -294,6 +310,18 @@ export class World extends Component {
         }
       }
     }
+  }
+
+  // ********** Collectors
+
+  createCollector( x, y ) {
+    let ship = new Ship();
+    ship.setDimensions( x, y, world.collectorImageSize, world.collectorImageSize );
+    ship.mining = null;
+    ship.miningCountdown = 0;
+    ship.armor = world.collectorArmor;
+    ship.speed = world.collectorSpeed;
+    this.collectors.push( ship );
   }
 
   collectorMineAluminum( collector ) {
@@ -329,10 +357,12 @@ export class World extends Component {
     }
   }
 
+  // ********** Explosions
+
   addExplosion( explosions, target ) {
     explosions.push({
       x: target.x + (target.width / 2) - (world.explosionSize / 2) + (Math.random() * 40 - 20),
-      y: target.yx + (target.height / 2) - (world.explosionSize / 2) + (Math.random() * 40 - 20),
+      y: target.y + (target.height / 2) - (world.explosionSize / 2) + (Math.random() * 40 - 20),
       counter: world.explosionLength,
     });
   }
@@ -404,6 +434,10 @@ export class World extends Component {
   }
 
   gameLoop() {
+    if( this.screenMode !== 0 ) {
+      // If title/game over screens are displayed, suspend game loop
+      return;
+    }
     this.collectors.forEach( (collector) => {
       this.collectorMineAluminum( collector );
       this.collectorMoveTowardsTarget( collector );
@@ -415,7 +449,7 @@ export class World extends Component {
       this.attack( mecha, this.pirates, mecha.target );
     });
     // Pirates
-    this.createPirates();
+    this.createPirates( time );
     this.pirates.forEach( (pirate, index) => {
       // Find a target
       pirate.findTarget( this.collectors );
@@ -547,9 +581,11 @@ export class World extends Component {
 
   render() {
     const images = this.getImagesForRender();
+    const titleScreen = this.screenMode === 0 ? [] : <TitleScreen startGame={this.startGame} />;
     return (
       <div className="Space" style={images.space}
           onClick={(e) => this.spaceClicked(e)}>
+        {titleScreen}
         {images.asteroids}
         {images.colonies}
         {images.collectors}
