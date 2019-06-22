@@ -151,11 +151,13 @@ export class World extends Component {
 
   collectorClicked(e) {
     this.selectedCollector = parseInt( e.currentTarget.alt.substring( 10 ) );
+    this.selectedMecha = -1;
     this.setReticle( this.collectors[this.selectedCollector] );
   }
 
   playerMechaClicked(e) {
     this.selectedMecha = parseInt( e.currentTarget.alt.substring( 6 ) );
+    this.selectedCollector = -1;
     this.setReticle( this.playerMecha[this.selectedMecha] );
   }
 
