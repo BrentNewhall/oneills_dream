@@ -11,7 +11,7 @@ class Fleet {
     }
 
     getShip( index ) {
-        if( index >= 0  &&  index < this.getShip.mechaList.length ) {
+        if( index >= 0  &&  index < this.mechaList.length ) {
             return this.mechaList[index];
         }
         else {
@@ -28,7 +28,10 @@ class Fleet {
             for( let i = 0; i < 5; i++ ) {
                 const x = -50 - Math.random() * 50;
                 const y = startY + Math.random() * 100;
-                const newMecha = new Mecha( x, y );
+                let newMecha = new Mecha( x, y );
+                newMecha.attackPower = 2;
+                newMecha.speed = 1;
+                newMecha.armor = 20;
                 this.mechaList.push( newMecha );
             }
             this.findTargets( enemies );
@@ -44,7 +47,7 @@ class Fleet {
     cleanupDeadTargets( deadTargets ) {
         deadTargets.forEach( (target) => {
             this.mechaList.forEach( (mecha) => {
-                if( mecha.target === target ) {
+                if( mecha.target !== null  &&  mecha.target.getID() === target.getID() ) {
                     mecha.target = null;
                 }
             })

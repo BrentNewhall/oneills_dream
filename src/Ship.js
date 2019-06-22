@@ -1,3 +1,5 @@
+import uuid from 'react-native-uuid';
+
 class Ship {
     constructor() {
         this.x = 0;
@@ -7,6 +9,11 @@ class Ship {
         this.target = null;
         this.speed = 1;
         this.armor = 10;
+        this.id = uuid.v4();
+    }
+
+    getID() {
+        return this.id;
     }
 
     setDimensions( x, y, width, height ) {

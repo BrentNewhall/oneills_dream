@@ -141,7 +141,6 @@ export class World extends Component {
 
   clickedOptionBGMusic( event ) {
     options.playBGmusic = event.target.checked;
-    console.log( options.playBGmusic );
   }
 
   clickedOptionSoundFX( event ) {
@@ -172,7 +171,7 @@ export class World extends Component {
   pirateClicked(e) {
     if( this.selectedMecha !== -1 ) {
       const selectedPirate = parseInt( e.currentTarget.alt.substring( 7 ) );
-      this.playerMecha[this.selectedMecha].target = selectedPirate;
+      this.playerMecha[this.selectedMecha].setTarget( this.pirates[selectedPirate] );      
       this.selectedMecha = -1;
       this.clearReticle();
     }
@@ -192,29 +191,6 @@ export class World extends Component {
     this.placeCollectorWhenClicked( e );
     this.placeMechaWhenClicked( e );
     this.placeColonyWhenClicked( e );
-    /* // Place collector
-    if( this.props.placingCollector ) {
-      this.collectors.push({
-        x: e.pageX - (world.collectorImageSize / 2),
-        y: e.pageY - (world.collectorImageSize / 2),
-        target: -1,
-        mining: -1,
-        miningCountdown: 0
-      });
-      this.props.actionMined( 0 - world.aluminumForCollector );
-      this.props.actionPlacingCollector( false );
-      this.forceUpdate();
-    }
-    // Place colony
-    else if( this.props.placingColony ) {
-      this.colonies.push({
-        x: e.pageX - (world.colonyImageSize / 2),
-        y: e.pageY - (world.colonyImageSize / 2)
-      });
-      this.props.actionMined( 0 - world.aluminumForColony );
-      this.props.actionPlacingColony( false );
-      this.forceUpdate();
-    } */
   }
 
   placeCollectorWhenClicked( e ) {
@@ -490,10 +466,8 @@ export class World extends Component {
   }
 
   gameLoop() {
-    if( this.showTitleScreen ) {
-      // If title/game over screens are displayed, suspend game loop
-      return;
-    }
+    // If title/game over screens are displayed, suspend game loop
+    if( this.showTitleScreen ) {  return;  }
     this.collectors.forEach( (collector) => {
       this.collectorMineAluminum( collector );
       this.collectorMoveTowardsTarget( collector );
@@ -503,7 +477,11 @@ export class World extends Component {
     // Update mecha
     this.playerMecha.forEach( (mecha) => {
       //this.mechaAttackTarget( mecha, this.pirates );
-      this.attack( mecha, this.pirates, mecha.target );
+      //this.attack( mecha, this.pirates, mecha.target );
+      let attackResult = mecha.attack();
+      if( attackResult !== null ) {
+        this.fleet.cleanupDeadTargets( [ attackResult ] );
+      }
     });
     // Pirates
     this.createPirates( this.time );
@@ -547,49 +525,6 @@ export class World extends Component {
     this.createShuttle( this.time );
     this.updateShuttles();
     this.updateExplosions( this.explosions );
-    /* this.collectors.forEach( (collector) => {
-      // Mine aluminum if on an asteroid
-      if( collector.mining >= 0 ) {
-        collector.miningCountdown -= 1;
-        //console.log( "Mining countdown " + collector.miningCountdown );
-        if( collector.miningCountdown <= 0 ) {
-          this.props.actionMined( 5 );
-          this.asteroids[collector.mining].aluminum -= 5;
-          // If asteroid is used up, stop mining it
-          if( this.asteroids[collector.mining].aluminum < 0 ) {
-            this.asteroids[collector.mining].aluminum = 0;
-            collector.mining = -1;
-          }
-          collector.miningCountdown = world.miningCountdown;
-          this.forceUpdate();
-        }
-      }
-      // Move towards a target if selected
-      if( collector.target >= 0 ) {
-        if( ! this.collectorAtTarget(collector, this.asteroids[collector.target]) ) {
-          // Move towards target
-          const target = this.asteroids[collector.target];
-          if( collector.x >= target.x + 2 ) {
-            collector.x -= 1;
-          }
-          else if( collector.x <= target.x + target.size ) {
-            collector.x += 1;
-          }
-          if( collector.y >= target.y + 2 ) {
-            collector.y -= 1;
-          }
-          else if( collector.y <= target.y + target.size ) {
-            collector.y += 1;
-          }
-          this.forceUpdate();
-        } else {
-          // Reached target
-          collector.mining = collector.target;
-          collector.target = -1;
-          collector.miningCountdown = world.miningCountdown;
-        }
-      }
-    }) */
   }
 
   getImagesForObject( objects, name, image, clickEvent ) {

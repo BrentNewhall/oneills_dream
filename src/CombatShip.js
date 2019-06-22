@@ -13,17 +13,23 @@ class CombatShip extends Ship {
     /* Returns target if it was hit by an attack; null otherwise. */
     attack() {
         const originalTarget = this.target;
-        if( this.target !== null  && this.distance(this.target) <= this.attackRange ) {
-            if( this.attackCountdown > 0 ) {
-                this.attackCountdown -= 1;
+        if( this.target !== null ) {
+            if( this.distance(this.target) <= this.attackRange ) {
+                if( this.attackCountdown > 0 ) {
+                    this.attackCountdown -= 1;
+                }
+                else {
+                    this.attackCountdown = this.attackCountdownMax;
+                    this.target.armor -= this.attackPower;
+                    if( this.target.armor <= 0 ) {
+                        this.target = null;
+                        console.log( "Destroyed; original is", originalTarget );
+                    }
+                    return originalTarget;
+                }
             }
             else {
-                this.attackCountdown = this.attackCountdownMax;
-                this.target.armor -= this.attackPower;
-                if( this.target.armor <= 0 ) {
-                    this.target = null;
-                }
-                return originalTarget;
+                this.moveTowardsTarget( this.target );
             }
         }
         return null;
