@@ -4,6 +4,7 @@
   height: 2464px;
   /* background-image: url('%PUBLIC_URL%/images/space_bg.jpg'); */
   background-size: cover;
+  z-index: 0;
 }
 
 .asteroid {
@@ -48,7 +49,7 @@
   z-index: 30;
 }
 
-.shutle {
+.shuttle {
   position: absolute;
   z-index: 31;
 }
