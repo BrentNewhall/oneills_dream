@@ -23,7 +23,6 @@ class CombatShip extends Ship {
                     this.target.armor -= this.attackPower;
                     if( this.target.armor <= 0 ) {
                         this.target = null;
-                        console.log( "Destroyed; original is", originalTarget );
                     }
                     return originalTarget;
                 }

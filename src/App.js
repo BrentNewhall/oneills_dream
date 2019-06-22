@@ -480,7 +480,8 @@ export class World extends Component {
       //this.attack( mecha, this.pirates, mecha.target );
       let attackResult = mecha.attack();
       if( attackResult !== null ) {
-        this.fleet.cleanupDeadTargets( [ attackResult ] );
+        console.log( "Enemy mecha hit!" );
+        this.fleet.destroy( attackResult );
       }
     });
     // Pirates

@@ -54,6 +54,14 @@ class Fleet {
         })
     }
 
+    destroy( destroyedMecha ) {
+        this.mechaList.forEach( (mecha, index) => {
+            if( mecha.getID() === destroyedMecha.getID()  &&  mecha.armor <= 0 ) {
+                this.mechaList.splice( index, 1 );
+            }
+        })
+    }
+
     update( enemies ) {
         let deadTargets = [];
         this.mechaList.forEach( (mecha) => {
