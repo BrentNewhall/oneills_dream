@@ -39,7 +39,8 @@ function TitleScreen(props) {
     <button onClick={() => { props.startGame(); }}>Start Game</button>
     <OptionsComponent clickedOptionBGMusic={props.clickedOptionBGMusic} clickedOptionSoundFX={props.clickedOptionSoundFX} options={props.options} />
     <h2>Credits</h2>
-    <p>Game written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
+    <p>This is a non-profit fan game using sprites from various <em>Mobile Suit Gundam</em> games.</p>
+    <p>All game logic written by <a href="http://brentnewhall.com">Brent P. Newhall</a></p>
     <p>Music from <a href="https://filmmusic.io">Filmmusic.io</a>: "The Complex" by <a href="https://incompetech.com">Kevin MacLeod</a>, licensed <a href="http://creativecommons.org/licenses/by/4.0/">CC BY</a></p>
   </div>
 }
