@@ -36,8 +36,8 @@ const world = {
 }
 
 export let options = {
-    playBGmusic: true,
-    playSoundFX: true,
+    playBGmusic: true, // true
+    playSoundFX: true, // true
 }
 
 export const ACTION_ADD_ALUMINUM = 'ADD_ALUMINUM';

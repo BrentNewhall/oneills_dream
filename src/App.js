@@ -317,6 +317,7 @@ export class World extends Component {
         const y = parseInt(Math.random() * world.height / 10);
         const pirate = new Pirate();
         pirate.setDimensions( -50, y, world.pirate.imageSize, world.pirate.imageSize );
+        pirate.origin.y = y;
         pirate.attackCountdownMax = world.pirate.attackCountdown;
         pirate.attackCountdown = 0;
         pirate.attackPower = world.pirate.attackPower
@@ -483,7 +484,6 @@ export class World extends Component {
       //this.attack( mecha, this.pirates, mecha.target );
       let attackResult = mecha.attack();
       if( attackResult !== null ) {
-        console.log( "Enemy mecha hit!" );
         this.fleet.destroy( attackResult );
       }
     });
@@ -494,21 +494,22 @@ export class World extends Component {
       pirate.findTarget( this.collectors );
       if( pirate.leave() ) {
         this.pirates.splice( index, 1 );
-        this.forceUpdate();
       }
       else if( pirate.target !== null ) {
         pirate.moveTowardsTarget( pirate.target );
-        this.forceUpdate();
         const result = pirate.attack();
         if( result !== null ) {
+          //this.addExplosion( this.explosions, pirate.target );
           this.collectors.forEach( (c,i) => {
             if( c === result ) {
               this.collectors.splice( i, 1 );
               pirate.leaving = true;
+              pirate.target = null;
             }
           })
         }
       }
+      this.forceUpdate();
     });
     // Fleet
     this.fleet.spawn( this.time, this.colonies.length, this.playerMecha );

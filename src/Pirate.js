@@ -8,6 +8,9 @@ class Pirate extends CombatShip {
     }
 
     leave() {
+        if( this.target !== null ) {
+            return;
+        }
         if( this.leaving ) {
             if( this.atTarget( this.origin, 50 ) ) {
                 return true;
