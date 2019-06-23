@@ -252,7 +252,7 @@ export class World extends Component {
 
   clearReticle() {
     this.setState( {
-      reticle: { x: -30, y: -30, world: world.reticleSize, height: world.reticleSize }
+      reticle: { x: -100, y: -100, world: world.reticleSize, height: world.reticleSize }
     });
   }
 
@@ -545,7 +545,10 @@ export class World extends Component {
         img = 'images/asteroid-depleted.png';
       }
       else if( name === 'shuttle'  &&  o.hasOwnProperty("offloading")  &&  o.offloading ) {
-        style.transform = "rotate(180deg)";
+        style.transform = "scaleX(-1)";
+      }
+      else if( name === 'pirate'  &&  o.hasOwnProperty("leaving")  &&  o.leaving ) {
+        style.transform = "scaleX(-1)";
       }
       return <img style={style} alt={name + ' ' + index}
           key={index} className={name}
