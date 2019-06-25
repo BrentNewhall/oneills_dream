@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Spritesheet from 'react-responsive-spritesheet';
 import ReactAudioPlayer from 'react-audio-player';
+
 import './App.css';
 
 import bgImage from './earth_edge.jpg'
@@ -20,6 +21,7 @@ import Shuttle from './Shuttle';
 import Pirate from './Pirate';
 import Mecha from './Mecha';
 import Fleet from './Fleet';
+import Colony from './Colony';
 
 
 function OptionsComponent( props ) {
@@ -223,13 +225,15 @@ export class World extends Component {
 
   placeColonyWhenClicked( e ) {
     if( this.props.placingColony ) {
-      this.colonies.push( {
-        x: e.pageX - (world.colonyImageWidth / 2),
-        y: e.pageY - (world.colonyImageHeight / 2),
-        width: world.colonyImageWidth,
-        height: world.colonyImageHeight,
-        population: 0,
-      } );
+      let colony = new Colony();
+      colony.setDimensions(
+        e.pageX - (world.colonyImageWidth / 2),
+        e.pageY - (world.colonyImageHeight / 2),
+        world.colonyImageWidth,
+        world.colonyImageHeight,
+      )
+      colony.population = 0;
+      this.colonies.push( colony );
       this.props.actionMined( 0 - world.aluminumForColony );
       this.props.actionPlacingColony( false );
       this.props.actionAddPoints( world.aluminumForColony * 5 );
@@ -496,6 +500,9 @@ export class World extends Component {
       let attackResult = mecha.attack();
       if( attackResult !== null ) {
         this.addExplosion( this.explosions, attackResult );
+        if( options.playSoundFX ) {
+          document.getElementById("audio-explosion").play();
+        }
         this.playerMechaDestroysWhat( attackResult );
       }
     });
@@ -524,16 +531,16 @@ export class World extends Component {
       this.forceUpdate();
     });
     // Fleet
-    if( this.fleet.spawn( this.time, this.colonies.length, this.playerMecha ) ) {
+    if( this.fleet.spawn( this.time, this.colonies.length, this.playerMecha, this.colonies ) ) {
       if( options.playSoundFX ) {
         document.getElementById("audio-warning").play();
       }
     }
-    let attackResult = this.fleet.update( this.playerMecha );
+    let attackResult = this.fleet.update( this.playerMecha, this.colonies );
     if( attackResult.length > 0 ) {
       attackResult.forEach( (attackedMecha) => {
         this.playerMecha.forEach( (m,i) => {
-          if( m === attackedMecha ) {
+          if( m.getID() === attackedMecha.getID() ) {
             this.addExplosion( this.explosions, m );
             if( options.playSoundFX ) {
               document.getElementById("audio-explosion").play();
@@ -543,7 +550,22 @@ export class World extends Component {
             }
           }
         });
+        this.colonies.forEach( (c,i) => {
+          if( c.getID() === attackedMecha.getID() ) {
+            this.addExplosion( this.explosions, c );
+            if( options.playSoundFX ) {
+              document.getElementById("audio-explosion").play();
+            }
+            if( c.armor <= 0 ) {
+              this.colonies.splice( i, 1 );
+            }
+          }
+        });
       });
+    }
+    // Find new targets for the fleet occasionally.
+    if( this.fleet.getShips().length > 0  &&  this.time % 5 === 0 ) {
+      this.fleet.findTargets( this.playerMecha, this.colonies );
     }
     // Shuttles and explosions
     this.createShuttle( this.time );

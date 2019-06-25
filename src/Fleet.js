@@ -19,7 +19,7 @@ class Fleet {
         }
     }
 
-    spawn( time, numColonies, enemies ) {
+    spawn( time, numColonies, mechaEnemies, colonies ) {
         if( time !== 0  &&
             time % world.newFleetEveryThisSeconds === 0  &&
             numColonies > 0  &&
@@ -34,22 +34,28 @@ class Fleet {
                 newMecha.armor = 20;
                 this.mechaList.push( newMecha );
             }
-            this.findTargets( enemies );
+            this.findTargets( mechaEnemies, colonies );
             return true;
         }
         return false;
     }
 
-    findTargets( enemies ) {
+    findTargets( mechaEnemies, colonies ) {
         this.mechaList.forEach( (mecha) => {
-            mecha.findTarget( enemies );
+            this.findTargetForMecha( mecha, mechaEnemies, colonies );
         });
+    }
+
+    findTargetForMecha( mecha, mechaEnemies, colonies ) {
+        mecha.findTarget( mechaEnemies );
+        mecha.findTarget( colonies );
+        console.log( "Enemy mecha has a target", mecha.target.getID() );
     }
 
     cleanupDeadTargets( deadTargets ) {
         deadTargets.forEach( (target) => {
             this.mechaList.forEach( (mecha) => {
-                if( mecha.target !== null  &&  mecha.target.getID() === target.getID() ) {
+                if( mecha.target !== null  &&  mecha.target.getID() === target.getID()  &&  target.armor <= 0 ) {
                     mecha.target = null;
                 }
             })
@@ -64,18 +70,19 @@ class Fleet {
         })
     }
 
-    update( enemies ) {
+    update( mechaEnemies, colonies ) {
         let deadTargets = [];
         this.mechaList.forEach( (mecha) => {
-            if( mecha.target !== null  &&  ! mecha.atTarget( mecha.target, 50 ) ) {
+            /* if( mecha.target !== null  &&  ! mecha.atTarget( mecha.target, 50 ) ) {
                 mecha.moveTowardsTarget( mecha.target );
             }
             else {
                 mecha.findTarget( enemies );
-            }
+            } */
             let result = mecha.attack();
             if( result !== null ) {
                 deadTargets.push( result );
+                this.findTargetForMecha( mecha, mechaEnemies, colonies );
             }
         });
         this.cleanupDeadTargets( deadTargets );

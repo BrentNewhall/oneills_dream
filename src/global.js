@@ -3,8 +3,8 @@ const world = {
     width: 1000,
     miningCountdown: 50,
     aluminumForCollector: 20,
-    aluminumForMecha: 5, //25
-    aluminumForColony: 1, //100
+    aluminumForMecha: 25, //25
+    aluminumForColony: 100, //100
     collectorSpeed: 1,
     collectorImageSize: 32,
     collectorArmor: 50,
