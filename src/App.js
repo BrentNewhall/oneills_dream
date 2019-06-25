@@ -90,6 +90,7 @@ export class World extends Component {
     this.clearReticle = this.clearReticle.bind(this);
     this.createPirates = this.createPirates.bind(this);
     this.pirateAttackTarget = this.pirateAttackTarget.bind(this);
+    this.playerMechaDestroysWhat = this.playerMechaDestroysWhat.bind(this);
     this.gameLoop = this.gameLoop.bind(this);
   }
 
@@ -251,7 +252,7 @@ export class World extends Component {
 
   clearReticle() {
     this.setState( {
-      reticle: { x: -30, y: -30, world: world.reticleSize, height: world.reticleSize }
+      reticle: { x: -100, y: -100, world: world.reticleSize, height: world.reticleSize }
     });
   }
 
@@ -316,6 +317,7 @@ export class World extends Component {
         const y = parseInt(Math.random() * world.height / 10);
         const pirate = new Pirate();
         pirate.setDimensions( -50, y, world.pirate.imageSize, world.pirate.imageSize );
+        pirate.origin.y = y;
         pirate.attackCountdownMax = world.pirate.attackCountdown;
         pirate.attackCountdown = 0;
         pirate.attackPower = world.pirate.attackPower
@@ -467,6 +469,17 @@ export class World extends Component {
     this.setState( { population} );
   }
 
+  playerMechaDestroysWhat( attackResult ) {
+    this.pirates.forEach( (pirate, index) => {
+      if( pirate.getID() === attackResult.getID() ) {
+        if( pirate.armor <= 0 ) {
+          this.pirates.splice( index, 1 );
+        }
+      }
+    });
+    this.fleet.destroy( attackResult );
+  }
+
   gameLoop() {
     // If title/game over screens are displayed, suspend game loop
     if( this.showTitleScreen ) {  return;  }
@@ -482,8 +495,8 @@ export class World extends Component {
       //this.attack( mecha, this.pirates, mecha.target );
       let attackResult = mecha.attack();
       if( attackResult !== null ) {
-        console.log( "Enemy mecha hit!" );
-        this.fleet.destroy( attackResult );
+        this.addExplosion( this.explosions, attackResult );
+        this.playerMechaDestroysWhat( attackResult );
       }
     });
     // Pirates
@@ -493,21 +506,22 @@ export class World extends Component {
       pirate.findTarget( this.collectors );
       if( pirate.leave() ) {
         this.pirates.splice( index, 1 );
-        this.forceUpdate();
       }
       else if( pirate.target !== null ) {
         pirate.moveTowardsTarget( pirate.target );
-        this.forceUpdate();
         const result = pirate.attack();
         if( result !== null ) {
+          //this.addExplosion( this.explosions, pirate.target );
           this.collectors.forEach( (c,i) => {
             if( c === result ) {
               this.collectors.splice( i, 1 );
               pirate.leaving = true;
+              pirate.target = null;
             }
           })
         }
       }
+      this.forceUpdate();
     });
     // Fleet
     if( this.fleet.spawn( this.time, this.colonies.length, this.playerMecha ) ) {
@@ -550,7 +564,10 @@ export class World extends Component {
         img = 'images/asteroid-depleted.png';
       }
       else if( name === 'shuttle'  &&  o.hasOwnProperty("offloading")  &&  o.offloading ) {
-        style.transform = "rotate(180deg)";
+        style.transform = "scaleX(-1)";
+      }
+      else if( name === 'pirate'  &&  o.hasOwnProperty("leaving")  &&  o.leaving ) {
+        style.transform = "scaleX(-1)";
       }
       return <img style={style} alt={name + ' ' + index}
           key={index} className={name}
