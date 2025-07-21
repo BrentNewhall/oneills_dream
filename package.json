@@ -10,7 +10,7 @@
     "react-native-uuid": "^1.4.9",
     "react-redux": "^6.0.0",
     "react-responsive-spritesheet": "^2.3.9",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^5.0.1",
     "redux": "^4.0.1"
   },
   "scripts": {
